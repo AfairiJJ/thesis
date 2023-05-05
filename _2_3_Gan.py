@@ -101,9 +101,9 @@ temperature = None  # comes into play with the categorical activation see multio
 
 # Generator tuning
 gen_hidden_sizes = [100, 100, 100]
-gen_bn_decay = .25
-gen_l2_regularization = 0.1
-gen_learning_rate = 0.001
+gen_bn_decay = .90
+gen_l2_regularization = 0
+gen_learning_rate = 0.01
 noise_size = z_size
 output_size = [1, 1, 1, 1, 1, 1, 5, 11, 2, 22, 6]  # how many categories with in each variable
 
@@ -111,13 +111,13 @@ assert sum(output_size) == data_size
 
 # Discriminator tuning
 disc_hidden_sizes = [data_size, data_size]
-disc_bn_decay = .2
+disc_bn_decay = .90
 critic_bool = True  # if false then between 0 and 1
 mini_batch_bool = False
 disc_leaky_param = 0.2
-disc_l2_regularization = 0.0
-disc_learning_rate = 0.001
-penalty = 1  ## deals with gradiant penalty
+disc_l2_regularization = 0
+disc_learning_rate = 0.01
+penalty = 10  ## deals with gradiant penalty
 
 auto_data = PolicyDataset(pol_dat, var_locs)
 auto_loader = DataLoader(auto_data,
