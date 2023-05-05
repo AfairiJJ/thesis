@@ -33,9 +33,9 @@ from torch.autograd.variable import Variable
 print(torch.cuda.is_available())
 
 print(torch.cuda.device_count())
-devid = torch.cuda.current_device()
-torch.cuda.set_device(devid)
-print(torch.cuda.get_device_name(devid))
+# devid = torch.cuda.current_device()
+# torch.cuda.set_device(devid)
+# print(torch.cuda.get_device_name(devid))
 
 dev = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 # %%
@@ -159,7 +159,7 @@ optim_disc = optim.Adam(discriminator.parameters(),
 
 
 
-epochs = 500
+epochs = 2000000
 disc_epochs = 2
 gen_epochs = 1
 generator.train(mode=True)
