@@ -1,23 +1,11 @@
 # Import necessary libraries
-import pandas as pd
-import numpy as np
-import math
 from copy import deepcopy
-from sklearn.model_selection import GroupShuffleSplit
-# Import necessary libraries
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
+
 import math
-import statsmodels.api as sm
-import statsmodels.formula.api as smf
-import itertools
-import plotly.express as px
-from scipy import stats
-from copy import deepcopy
+import numpy as np
+import pandas as pd
 from sklearn.model_selection import GroupShuffleSplit
-from sklearn.datasets import fetch_openml
+
 
 def feature_engineering_frequency_schelldorfer(freq):
     df_freq = freq.iloc[freq.drop(['IDpol', 'Exposure', 'ClaimNb'], axis=1).drop_duplicates().index]

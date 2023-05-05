@@ -5,10 +5,14 @@ The majority of this script comes straight from https://github.com/rcamino/multi
 
 from __future__ import print_function
 
+from builtins import super
+
+import torch
 import torch.nn as nn
 
 from Functions.MC_WGAN_GP.gan_scripts.singleoutput import SingleOutput
 from Functions.MC_WGAN_GP.gan_scripts.multioutput import MultiCategorical
+dev = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
 class Generator2(nn.Module):
 
@@ -50,6 +54,6 @@ class Generator2(nn.Module):
         if self.hidden_layers is None:
             hidden = noise
         else:
-            hidden = self.hidden_layers(noise)
+            hidden = self.hidden_layers(noise.to(dev))
 
         return self.output(hidden, training=training, temperature=temperature)
