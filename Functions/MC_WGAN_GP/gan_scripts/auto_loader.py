@@ -8,13 +8,14 @@ import pandas as pd
 import numpy as np
 import torch
 
-
 class PolicyDataset(Dataset):
     def __init__(self, data, cont_locs, small_test = None):
       self.policy = data.drop(data.columns[cont_locs], axis=1, inplace = False)  
       self.cont = data.iloc[:,cont_locs]
       self.small_test = small_test
       self.cont_locs = cont_locs
+      self.policies = torch.from_numpy(self.policy.values).float()
+      self.conts = torch.from_numpy(self.cont.values).float()
 
     def __getitem__(self,index):
       if len(self.cont_locs) > 0:
@@ -23,6 +24,10 @@ class PolicyDataset(Dataset):
       else:
           return [torch.from_numpy(self.policy.iloc[index].values).float(),
                   0]
+
+    def get_catcont(self):
+      return torch.from_numpy(self.policy.values).float(), torch.from_numpy(self.cont.values).float()
+
     def __len__(self):
       if self.small_test is not None:
           return self.small_test

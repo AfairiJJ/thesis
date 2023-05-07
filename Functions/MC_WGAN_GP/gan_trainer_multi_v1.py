@@ -6,10 +6,10 @@ Created on Fri Dec 14 14:25:39 2018
 """
 
 # Ensure matrix multiplication only uses one core
-import os
-os.environ["MKL_NUM_THREADS"] = "1" 
-os.environ["NUMEXPR_NUM_THREADS"] = "1" 
-os.environ["OMP_NUM_THREADS"] = "1" 
+# import os
+# os.environ["MKL_NUM_THREADS"] = "1"
+# os.environ["NUMEXPR_NUM_THREADS"] = "1"
+# os.environ["OMP_NUM_THREADS"] = "1"
 
 ## Import packages
 import argparse
@@ -67,7 +67,7 @@ pol_dat = pd.concat([cont_vars2.reset_index(drop=True), policy_cat], axis=1)
 #pol_dat  = pol_dat.sample(n = 10000, random_state = 12)
 
 # Split the data in to train, test, and validation sets (80,10,10)
-np.random.seed(seed=123)
+np.random.seed(seed=1)
 all_inds = np.arange(0,(pol_dat.shape[0]-1))
 test_inds = np.random.choice(all_inds, size=np.floor(pol_dat.shape[0]*.15).astype('int'), replace=False, p=None)
 second_inds = np.setdiff1d(all_inds, test_inds)

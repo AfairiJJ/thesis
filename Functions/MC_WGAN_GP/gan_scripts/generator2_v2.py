@@ -9,6 +9,9 @@ from builtins import super
 
 import torch
 import torch.nn as nn
+import torch
+import torchvision.models as models
+from torch.profiler import profile, record_function, ProfilerActivity
 
 from Functions.MC_WGAN_GP.gan_scripts.singleoutput import SingleOutput
 from Functions.MC_WGAN_GP.gan_scripts.multioutput import MultiCategorical
