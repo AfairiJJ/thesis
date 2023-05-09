@@ -129,7 +129,7 @@ def train(generator,
         logger.log(epoch_index, num_epochs, "generator.pt", "train_mean_loss", np.mean(gen_losses))
 
         # save models for the epoch
-        if epoch_index % 100 == 0:
+        if (epoch_index-4) % 100 == 0:
             torch.save(generator.state_dict(), output_gen_path)
             torch.save(discriminator.state_dict(), output_disc_path)
             logger.flush()

@@ -84,11 +84,11 @@ def main():
 
     options = options_parser.parse_args()
 
-    options.generator = 'data/generator_2023_05_09_18.pt'
+    options.generator = 'data/generators/generator_2023_05_09_23.pt'
     options.metadata = 'config/metadata.json'
-    options.num_samples = 100
+    options.num_samples = 100000
     options.num_features = 52
-    options.data = 'data/gan_generated/sample_no_ei.csv'
+    options.data = 'data/gan_generated/sample_no_ei.pickle'
 
     generator = Generator(
         options.noise_size,
@@ -106,8 +106,10 @@ def main():
         batch_size=options.batch_size,
         noise_size=options.noise_size
     )
+
+    print('Saving sample')
     data = pd.DataFrame(data)
-    data.to_csv(options.data)
+    data.to_pickle(options.data)
 
 
 if __name__ == "__main__":
