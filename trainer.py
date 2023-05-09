@@ -190,7 +190,7 @@ def main():
     options_parser.add_argument(
         "--num_epochs",
         type=int,
-        default=10000,
+        default=100000,
         help="Number of epochs."
     )
 
