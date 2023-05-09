@@ -93,7 +93,7 @@ def train_autoencoder(autoencoder,
                                 variable_sizes = variable_sizes)
         loss.backward()
         optimizer.step()
-        loop.set_description('epoch:{}, loss:{:.4f}'.format(epoch, loss))
+        loop.set_description('epoch:{}, loss.csv:{:.4f}'.format(epoch, loss))
         loop.update(1)
         epoch_loss.append(loss.item())
       losses.append(np.mean(epoch_loss))

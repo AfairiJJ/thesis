@@ -1,6 +1,8 @@
 from __future__ import division
 
-from future.utils import implements_iterator
+from Functions.mcwgan.functions import implements_iterator
+
+implements_iterator
 
 import numpy as np
 

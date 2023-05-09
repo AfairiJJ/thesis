@@ -13,7 +13,7 @@ def load_variable_sizes_from_metadata(metadata_path):
 
 
 def categorical_variable_loss(reconstructed, original, variable_sizes):
-    # by default use loss for binary variables
+    # by default use loss.csv for binary variables
     if variable_sizes is None:
         return F.binary_cross_entropy(reconstructed, original)
     # use the variable sizes when available
@@ -24,7 +24,7 @@ def categorical_variable_loss(reconstructed, original, variable_sizes):
         for variable_size in variable_sizes:
             # if it is a categorical variable
             if variable_size > 1:
-                # add loss from the accumulated continuous variables
+                # add loss.csv from the accumulated continuous variables
                 if continuous_size > 0:
                     end = start + continuous_size
                     batch_reconstructed_variable = reconstructed[:, start:end]
@@ -32,7 +32,7 @@ def categorical_variable_loss(reconstructed, original, variable_sizes):
                     loss += F.mse_loss(batch_reconstructed_variable, batch_target)
                     start = end
                     continuous_size = 0
-                # add loss from categorical variable
+                # add loss.csv from categorical variable
                 end = start + variable_size
                 batch_reconstructed_variable = reconstructed[:, start:end]
                 batch_target = torch.argmax(original[:, start:end], dim=1)
@@ -42,7 +42,7 @@ def categorical_variable_loss(reconstructed, original, variable_sizes):
             else:
                 continuous_size += 1
 
-        # add loss from the remaining accumulated continuous variables
+        # add loss.csv from the remaining accumulated continuous variables
         if continuous_size > 0:
             end = start + continuous_size
             batch_reconstructed_variable = reconstructed[:, start:end]

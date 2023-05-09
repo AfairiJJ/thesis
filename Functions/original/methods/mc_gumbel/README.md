@@ -29,7 +29,7 @@ python multi_categorical_gans/methods/mc_gumbel/trainer.py \
     data/synthetic/mix_small/metadata.json \
     models/mc-gumbel/synthetic/mix_small/generator.torch \
     models/mc-gumbel/synthetic/mix_small/discriminator.torch \
-    models/mc-gumbel/synthetic/mix_small/loss.csv
+    models/mc-gumbel/synthetic/mix_small/loss.csv.csv
 ```
 
 Sampling:

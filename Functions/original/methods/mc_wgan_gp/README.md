@@ -29,7 +29,7 @@ python multi_categorical_gans/methods/mc_wgan_gp/trainer.py \
     data/synthetic/mix_small/metadata.json \
     models/mc-wgan-gp/synthetic/mix_small/generator.torch \
     models/mc-wgan-gp/synthetic/mix_small/discriminator.torch \
-    models/mc-wgan-gp/synthetic/mix_small/loss.csv
+    models/mc-wgan-gp/synthetic/mix_small/loss.csv.csv
 ```
 
 Sampling:

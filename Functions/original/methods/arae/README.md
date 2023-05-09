@@ -36,7 +36,7 @@ python multi_categorical_gans/methods/arae/trainer.py \
     models/arae/synthetic/mix_small/autoencoder.torch \
     models/arae/synthetic/mix_small/generator.torch \
     models/arae/synthetic/mix_small/discriminator.torch \
-    models/arae/synthetic/mix_small/loss.csv
+    models/arae/synthetic/mix_small/loss.csv.csv
 ```
 
 Sampling:
@@ -94,7 +94,7 @@ python multi_categorical_gans/methods/arae/trainer.py \
     models/mc-arae/synthetic/mix_small/autoencoder.torch \
     models/mc-arae/synthetic/mix_small/generator.torch \
     models/mc-arae/synthetic/mix_small/discriminator.torch \
-    models/mc-arae/synthetic/mix_small/loss.csv
+    models/mc-arae/synthetic/mix_small/loss.csv.csv
 ```
 
 Sampling:

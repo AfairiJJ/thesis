@@ -256,9 +256,11 @@ def main():
 
     options.data = 'data/gan_dataprep/train_gan.pickle'
     options.metadata = './config/metadata.json'
-    options.output_generator = f'./data/generators/generator_{datetime.now()}.pt'
-    options.output_discriminator = f'./data/discriminators/discriminator_{datetime.now()}.pt'
-    options.output_loss = f'./data/losses/loss_{datetime.now()}.pt'
+
+    dtnow = datetime.now().strftime('%Y_%m_%d_%H')
+    options.output_generator = f'./data/generators/generator_{dtnow}.pt'
+    options.output_discriminator = f'./data/discriminators/discriminator_{dtnow}.pt'
+    options.output_loss = f'./data/losses/loss_{dtnow}.csv'
 
     if options.seed is not None:
         np.random.seed(options.seed)

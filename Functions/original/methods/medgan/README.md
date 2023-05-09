@@ -26,7 +26,7 @@ python multi_categorical_gans/methods/medgan/pre_trainer.py \
     --seed=123 \
     data/synthetic/mix_small/synthetic-train.features.npz \
     models/medgan/synthetic/mix_small/pre-autoencoder.torch \
-    models/medgan/synthetic/mix_small/pre-loss.csv
+    models/medgan/synthetic/mix_small/pre-loss.csv.csv
 ```
 
 Training:
@@ -52,7 +52,7 @@ python multi_categorical_gans/methods/medgan/trainer.py \
     models/medgan/synthetic/mix_small/autoencoder.torch \
     models/medgan/synthetic/mix_small/generator.torch \
     models/medgan/synthetic/mix_small/discriminator.torch \
-    models/medgan/synthetic/mix_small/loss.csv
+    models/medgan/synthetic/mix_small/loss.csv.csv
 ```
 
 Sampling:
@@ -99,7 +99,7 @@ python multi_categorical_gans/methods/medgan/pre_trainer.py \
     --seed=123 \
     data/synthetic/mix_small/synthetic-train.features.npz \
     models/mc-medgan/synthetic/mix_small/pre-autoencoder.torch \
-    models/mc-medgan/synthetic/mix_small/pre-loss.csv
+    models/mc-medgan/synthetic/mix_small/pre-loss.csv.csv
 ```
 
 Training:
@@ -127,7 +127,7 @@ python multi_categorical_gans/methods/medgan/trainer.py \
     models/mc-medgan/synthetic/mix_small/autoencoder.torch \
     models/mc-medgan/synthetic/mix_small/generator.torch \
     models/mc-medgan/synthetic/mix_small/discriminator.torch \
-    models/mc-medgan/synthetic/mix_small/loss.csv
+    models/mc-medgan/synthetic/mix_small/loss.csv.csv
 ```
 
 Sampling:

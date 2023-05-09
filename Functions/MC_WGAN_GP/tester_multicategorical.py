@@ -216,7 +216,7 @@ for epoch in range(epochs):
             real_features = Variable(batch)
             real_pred = discriminator(real_features)
             # the disc outputs high numbers if it thinks the data is real, we take the negative of this
-            # Because we are minimizing loss
+            # Because we are minimizing loss.csv
             real_loss = -real_pred.mean(0).view(1)  
             real_loss.backward()
 
