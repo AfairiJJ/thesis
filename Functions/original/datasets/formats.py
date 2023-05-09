@@ -1,10 +1,11 @@
 import numpy as np
+import pandas as pd
 
 from scipy.sparse import load_npz, save_npz
 
 
 def load_dense(features_path, transform=True):
-    features = np.load(features_path)
+    features = pd.read_pickle(features_path).to_numpy()
     if transform:
         features = features.astype(np.float32)
     return features

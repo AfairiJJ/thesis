@@ -1,0 +1,20 @@
+{
+  "variables": [
+    "VehPower", "VehAge", "DrivAge", "Density", "BonusMalus", "Exposure",
+    "ClaimNb", "VehBrand", "VehGas", "Region", "Area"
+  ],
+
+  "variable_types": [
+    "numerical", "numerical","numerical","numerical","numerical","numerical",
+    "categorical", "categorical", "categorical", "categorical", "categorical"
+  ],
+
+  "variable_sizes": [
+    1, 1, 1, 1, 1, 1,
+    5, 11, 2, 22, 6
+  ],
+  "num_variables": 11,
+  "num_binary_variables": 0,
+  "num_categorical_variables": 5,
+  "num_numerical_variables": 6
+}

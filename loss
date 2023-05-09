@@ -1,0 +1,5 @@
+epoch,model,metric_name,metric_value,time
+1,discriminator.pt,train_mean_loss,-94.77226,4.8189191818237305
+1,generator.pt,train_mean_loss,-8.059706,4.819011926651001
+2,discriminator.pt,train_mean_loss,-100.35887,4.729218006134033
+2,generator.pt,train_mean_loss,-3.9938452,4.7293381690979

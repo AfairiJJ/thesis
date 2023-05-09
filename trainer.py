@@ -1,6 +1,8 @@
 from __future__ import print_function
 
 import argparse
+from datetime import datetime
+
 import torch
 
 import numpy as np
@@ -8,18 +10,18 @@ import numpy as np
 from torch.autograd.variable import Variable
 from torch.optim import Adam
 
-from multi_categorical_gans.datasets.dataset import Dataset
-from multi_categorical_gans.datasets.formats import data_formats, loaders
+from Functions.original.datasets.dataset import Dataset
+from Functions.original.datasets.formats import data_formats, loaders
 
-from multi_categorical_gans.methods.general.discriminator import Discriminator
-from multi_categorical_gans.methods.general.generator import Generator
-from multi_categorical_gans.methods.general.wgan_gp import calculate_gradient_penalty
+from Functions.original.methods.general.discriminator import Discriminator
+from Functions.original.methods.general.generator import Generator
+from Functions.original.methods.general.wgan_gp import calculate_gradient_penalty
 
-from multi_categorical_gans.utils.categorical import load_variable_sizes_from_metadata
-from multi_categorical_gans.utils.commandline import DelayedKeyboardInterrupt, parse_int_list
-from multi_categorical_gans.utils.cuda import to_cuda_if_available, to_cpu_if_available
-from multi_categorical_gans.utils.initialization import load_or_initialize
-from multi_categorical_gans.utils.logger import Logger
+from Functions.original.utils.categorical import load_variable_sizes_from_metadata
+from Functions.original.utils.commandline import DelayedKeyboardInterrupt, parse_int_list
+from Functions.original.utils.cuda import to_cuda_if_available, to_cpu_if_available
+from Functions.original.utils.initialization import load_or_initialize
+from Functions.original.utils.logger import Logger
 
 
 def train(generator,
@@ -123,11 +125,11 @@ def train(generator,
                 del fake_loss
 
         # log epoch metrics for current class
-        logger.log(epoch_index, num_epochs, "discriminator", "train_mean_loss", np.mean(disc_losses))
-        logger.log(epoch_index, num_epochs, "generator", "train_mean_loss", np.mean(gen_losses))
+        logger.log(epoch_index, num_epochs, "discriminator.pt", "train_mean_loss", np.mean(disc_losses))
+        logger.log(epoch_index, num_epochs, "generator.pt", "train_mean_loss", np.mean(gen_losses))
 
         # save models for the epoch
-        with DelayedKeyboardInterrupt():
+        if epoch_index % 100 == 0:
             torch.save(generator.state_dict(), output_gen_path)
             torch.save(discriminator.state_dict(), output_disc_path)
             logger.flush()
@@ -138,14 +140,14 @@ def train(generator,
 def main():
     options_parser = argparse.ArgumentParser(description="Train Gumbel generator and discriminator.")
 
-    options_parser.add_argument("data", type=str, help="Training data. See 'data_format' parameter.")
-
-    options_parser.add_argument("metadata", type=str,
-                                help="Information about the categorical variables in json format.")
-
-    options_parser.add_argument("output_generator", type=str, help="Generator output file.")
-    options_parser.add_argument("output_discriminator", type=str, help="Discriminator output file.")
-    options_parser.add_argument("output_loss", type=str, help="Loss output file.")
+    # options_parser.add_argument("data", type=str, help="Training data. See 'data_format' parameter.")
+    #
+    # options_parser.add_argument("metadata", type=str,
+    #                             help="Information about the categorical variables in json format.")
+    #
+    # options_parser.add_argument("output_generator", type=str, help="Generator output file.")
+    # options_parser.add_argument("output_discriminator", type=str, help="Discriminator output file.")
+    # options_parser.add_argument("output_loss", type=str, help="Loss output file.")
 
     options_parser.add_argument("--input_generator", type=str, help="Generator input file.", default=None)
     options_parser.add_argument("--input_discriminator", type=str, help="Discriminator input file.", default=None)
@@ -159,7 +161,7 @@ def main():
     options_parser.add_argument(
         "--data_format",
         type=str,
-        default="sparse",
+        default="dense",
         choices=data_formats,
         help="Either a dense numpy array, a sparse csr matrix or any of those formats in split into several files."
     )
@@ -195,14 +197,14 @@ def main():
     options_parser.add_argument(
         "--l2_regularization",
         type=float,
-        default=0.001,
+        default=0.0001,
         help="L2 regularization weight for every parameter."
     )
 
     options_parser.add_argument(
         "--learning_rate",
         type=float,
-        default=0.001,
+        default=0.01,
         help="Adam learning rate."
     )
 
@@ -248,9 +250,15 @@ def main():
         help="WGAN-GP gradient penalty lambda."
     )
 
-    options_parser.add_argument("--seed", type=int, help="Random number generator seed.", default=42)
+    options_parser.add_argument("--seed", type=int, help="Random number generator seed.", default=1)
 
     options = options_parser.parse_args()
+
+    options.data = 'data/gan_dataprep/train_gan.pickle'
+    options.metadata = './config/metadata.json'
+    options.output_generator = f'./data/generators/generator_{datetime.now()}.pt'
+    options.output_discriminator = f'./data/discriminators/discriminator_{datetime.now()}.pt'
+    options.output_loss = f'./data/losses/loss_{datetime.now()}.pt'
 
     if options.seed is not None:
         np.random.seed(options.seed)

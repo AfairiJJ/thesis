@@ -4,7 +4,7 @@ import torch
 
 from torch.autograd.variable import Variable
 
-from multi_categorical_gans.utils.cuda import to_cuda_if_available
+from Functions.original.utils.cuda import to_cuda_if_available
 
 
 def calculate_gradient_penalty(discriminator, penalty, real_data, fake_data):

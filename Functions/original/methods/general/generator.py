@@ -2,8 +2,8 @@ from __future__ import print_function
 
 import torch.nn as nn
 
-from multi_categorical_gans.methods.general.multi_categorical import MultiCategorical
-from multi_categorical_gans.methods.general.single_output import SingleOutput
+from Functions.original.methods.general.multi_categorical import MultiCategorical
+from Functions.original.methods.general.single_output import SingleOutput
 
 
 class Generator(nn.Module):

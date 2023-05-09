@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from multi_categorical_gans.utils.cuda import load_without_cuda
+from Functions.original.utils.cuda import load_without_cuda
 
 
 def initialize_weights(module):
