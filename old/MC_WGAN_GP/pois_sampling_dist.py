@@ -35,7 +35,7 @@ from gan_scripts.undo_dummy import back_from_dummies
 torch.set_num_threads(1)
 
 # Load and edit data
-policy1 = pd.read_csv("./datasets/policy_dat_v2.csv")
+policy1 = pd.read_csv("datasets/policy_dat_v2.csv")
 policy1['ClaimNb'] = policy1['ClaimNb'].astype('category')
 policy1['ExposureCat'] = policy1['Exposure_cat'].astype('category')
 policy1['DensityCat'] = policy1['Density_cat'].astype('category')

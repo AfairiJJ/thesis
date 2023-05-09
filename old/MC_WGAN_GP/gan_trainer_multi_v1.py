@@ -45,7 +45,7 @@ def parse_int_list(comma_separated_ints):
 
 
 # Load and edit data
-policy1 = pd.read_csv("./datasets/policy_dat_v2.csv")
+policy1 = pd.read_csv("datasets/policy_dat_v2.csv")
 policy1['ClaimNb'] = policy1['ClaimNb'].astype('category')
 policy1['ExposureCat'] = policy1['Exposure_cat'].astype('category')
 policy1['DensityCat'] = policy1['Density_cat'].astype('category')

@@ -46,7 +46,7 @@ def parse_int_list(comma_separated_ints):
 #Load and edit the data
 #To speed up training, subset to 3 variables until we get a GAN we like
 # Get dummy variables for categorical variables and separate categorical and continuous variables
-policy1 = pd.read_csv("./datasets/policy_dat_v2.csv")
+policy1 = pd.read_csv("datasets/policy_dat_v2.csv")
 policy1 = policy1[['ClaimNb','DriverAge', 'Density_cat']]
 policy1['ClaimNb'] = policy1['ClaimNb'].astype('category')
 policy1['DensityCat'] = policy1['Density_cat'].astype('category')

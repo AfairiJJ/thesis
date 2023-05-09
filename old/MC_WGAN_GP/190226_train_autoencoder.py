@@ -25,7 +25,7 @@ from gan_scripts.autoencoder import AutoEncoder, autoencoder_loss
 
 ##
 # Load and edit data
-policy1=pd.read_csv("./datasets/policy_dat_v2.csv")
+policy1=pd.read_csv("datasets/policy_dat_v2.csv")
 policy1['ClaimNb'] = policy1['ClaimNb'].astype('category')
 policy1['Exposure_cat'] = policy1['Exposure_cat'].astype('category')
 policy1['Density_cat'] = policy1['Density_cat'].astype('category')
@@ -118,7 +118,7 @@ autoencoder = AutoEncoder(data_size = data_size-len(var_locs),
                           encoder_hidden_sizes=[],
                           decoder_hidden_sizes=[],
                           variable_sizes= variable_sizes )  
-autoencoder.load_state_dict(torch.load('./saved_parameters/autoencoder_190220'))               
+autoencoder.load_state_dict(torch.load('saved_parameters/autoencoder_190220'))
 
 
 for j,k in auto_loader:

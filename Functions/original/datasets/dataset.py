@@ -1,6 +1,6 @@
 from __future__ import division
 
-from Functions.mcwgan.functions import implements_iterator
+from old.mcwgan.functions import implements_iterator
 
 implements_iterator
 

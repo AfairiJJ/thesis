@@ -12,7 +12,7 @@ import torch.nn as nn
 import torch
 import numpy as np
 import pandas as pd
-from Functions.MC_WGAN_GP.gan_scripts.undo_dummy import back_from_dummies
+from old.MC_WGAN_GP.gan_scripts.undo_dummy import back_from_dummies
 from patsy import dmatrices
 
 class Discriminator2(nn.Module):

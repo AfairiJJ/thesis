@@ -13,8 +13,6 @@ import statsmodels.api as sm
 # import modules
 import torch.optim as optim
 from patsy import dmatrices
-import numpy as np
-from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 pd.set_option('display.float_format', lambda x: '%.2f' % x)
@@ -24,11 +22,11 @@ import torch
 import numpy as np
 
 ## Import created modules
-from Functions.MC_WGAN_GP.gan_scripts.auto_loader import PolicyDataset
-from Functions.MC_WGAN_GP.gan_scripts.generator2_v2 import Generator2
-from Functions.MC_WGAN_GP.gan_scripts.discriminator2_v3 import Discriminator2
-from Functions.MC_WGAN_GP.gan_scripts.gradiant_penalty import calculate_gradient_penalty
-from Functions.MC_WGAN_GP.gan_scripts.undo_dummy import back_from_dummies
+from old.MC_WGAN_GP.gan_scripts.auto_loader import PolicyDataset
+from old.MC_WGAN_GP.gan_scripts import Generator2
+from old.MC_WGAN_GP.gan_scripts import Discriminator2
+from old.MC_WGAN_GP.gan_scripts import calculate_gradient_penalty
+from old.MC_WGAN_GP.gan_scripts import back_from_dummies
 
 from torch.autograd.variable import Variable
 

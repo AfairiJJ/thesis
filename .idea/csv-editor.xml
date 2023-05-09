@@ -3,6 +3,13 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="/Functions/MC_WGAN_GP/datasets/cat_policy_dat.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/Functions/MC_WGAN_GP/datasets/policy_dat_v2.csv">
           <value>
             <Attribute>

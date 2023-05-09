@@ -7,14 +7,11 @@ from __future__ import print_function
 
 from builtins import super
 
-import torch
 import torch.nn as nn
 import torch
-import torchvision.models as models
-from torch.profiler import profile, record_function, ProfilerActivity
 
-from Functions.MC_WGAN_GP.gan_scripts.singleoutput import SingleOutput
-from Functions.MC_WGAN_GP.gan_scripts.multioutput import MultiCategorical
+from old.MC_WGAN_GP.gan_scripts.singleoutput import SingleOutput
+from old.MC_WGAN_GP.gan_scripts.multioutput import MultiCategorical
 dev = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
 class Generator2(nn.Module):
