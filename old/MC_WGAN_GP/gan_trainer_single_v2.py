@@ -13,12 +13,9 @@ Created on Tue Sep  3 10:33:07 2019
 import os
 os.environ["MKL_NUM_THREADS"] = "1" 
 os.environ["NUMEXPR_NUM_THREADS"] = "1" 
-os.environ["OMP_NUM_THREADS"] = "1" 
+os.environ["OMP_NUM_THREADS"] = "1"
 
-import argparse
 import torch
-import torch.optim as optim
-from torch.utils.data import DataLoader
 from torch.autograd.variable import Variable
 from tqdm import tqdm
 import pandas as pd
@@ -27,12 +24,8 @@ import statsmodels.api as sm
 from patsy import dmatrices
 
 ## Import created modules
-from gan_scripts.auto_loader import PolicyDataset
-from gan_scripts.autoencoder import AutoEncoder
-from gan_scripts.generator2_v2 import Generator2
-from gan_scripts.discriminator2_v3 import Discriminator2
 from gan_scripts.gradiant_penalty import calculate_gradient_penalty
-from gan_scripts.undo_dummy import back_from_dummies
+from Functions.original.utils.undo_dummy import back_from_dummies
 
 
 # Sets the number of cores used on the server

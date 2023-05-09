@@ -11,7 +11,6 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torch.autograd.variable import Variable
 from tqdm import tqdm
-import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
@@ -24,7 +23,7 @@ from gan_scripts.autoencoder import AutoEncoder
 from gan_scripts.generator2_v2 import Generator2
 from gan_scripts.discriminator2_v3 import Discriminator2
 from gan_scripts.gradiant_penalty import calculate_gradient_penalty
-from gan_scripts.undo_dummy import back_from_dummies
+from Functions.original.utils.undo_dummy import back_from_dummies
 
 # Load Data
 

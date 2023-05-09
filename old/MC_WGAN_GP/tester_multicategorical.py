@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import statsmodels.api as sm
 from patsy import dmatrices
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
+
 pd.set_option('display.float_format', lambda x: '%.2f' % x)
 
 ## Import created modules
@@ -25,7 +25,7 @@ from gan_scripts.auto_loader import PolicyDataset
 from gan_scripts.generator2_v2 import Generator2
 from gan_scripts.discriminator2_v3 import Discriminator2
 from gan_scripts.gradiant_penalty import calculate_gradient_penalty
-from gan_scripts.undo_dummy import back_from_dummies
+from Functions.original.utils.undo_dummy import back_from_dummies
 
 # Load Data
 

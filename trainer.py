@@ -3,6 +3,7 @@ from __future__ import print_function
 import argparse
 from datetime import datetime
 
+import joblib
 import torch
 
 import numpy as np
@@ -42,7 +43,6 @@ def train(generator,
           penalty=0.1
           ):
     generator, discriminator = to_cuda_if_available(generator, discriminator)
-
     optim_gen = Adam(generator.parameters(), weight_decay=l2_regularization, lr=learning_rate)
     optim_disc = Adam(discriminator.parameters(), weight_decay=l2_regularization, lr=learning_rate)
 
