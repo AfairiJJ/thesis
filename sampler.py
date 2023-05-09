@@ -1,17 +1,19 @@
 from __future__ import print_function
 
 import argparse
+
+import pandas as pd
 import torch
 
 import numpy as np
 
 from torch.autograd.variable import Variable
 
-from multi_categorical_gans.methods.general.generator import Generator
+from Functions.original.methods.general.generator import Generator
 
-from multi_categorical_gans.utils.categorical import load_variable_sizes_from_metadata
-from multi_categorical_gans.utils.commandline import parse_int_list
-from multi_categorical_gans.utils.cuda import to_cuda_if_available, to_cpu_if_available, load_without_cuda
+from Functions.original.utils.categorical import load_variable_sizes_from_metadata
+from Functions.original.utils.commandline import parse_int_list
+from Functions.original.utils.cuda import to_cuda_if_available, to_cpu_if_available, load_without_cuda
 
 
 def sample(generator, num_samples, num_features, batch_size=100, noise_size=128):
@@ -43,14 +45,14 @@ def sample(generator, num_samples, num_features, batch_size=100, noise_size=128)
 def main():
     options_parser = argparse.ArgumentParser(description="Sample data with MedGAN.")
 
-    options_parser.add_argument("generator", type=str, help="Generator input file.")
-
-    options_parser.add_argument("metadata", type=str,
-                                help="Information about the categorical variables in json format.")
-
-    options_parser.add_argument("num_samples", type=int, help="Number of output samples.")
-    options_parser.add_argument("num_features", type=int, help="Number of output features.")
-    options_parser.add_argument("data", type=str, help="Output data.")
+    # options_parser.add_argument("generator", type=str, help="Generator input file.")
+    #
+    # options_parser.add_argument("metadata", type=str,
+    #                             help="Information about the categorical variables in json format.")
+    #
+    # options_parser.add_argument("num_samples", type=int, help="Number of output samples.")
+    # options_parser.add_argument("num_features", type=int, help="Number of output features.")
+    # options_parser.add_argument("data", type=str, help="Output data.")
 
     options_parser.add_argument(
         "--noise_size",
@@ -82,6 +84,12 @@ def main():
 
     options = options_parser.parse_args()
 
+    options.generator = 'data/generator_2023_05_09_18.pt'
+    options.metadata = 'config/metadata.json'
+    options.num_samples = 100
+    options.num_features = 52
+    options.data = 'data/gan_generated/sample_no_ei.csv'
+
     generator = Generator(
         options.noise_size,
         load_variable_sizes_from_metadata(options.metadata),
@@ -98,8 +106,8 @@ def main():
         batch_size=options.batch_size,
         noise_size=options.noise_size
     )
-
-    np.save(options.data, data)
+    data = pd.DataFrame(data)
+    data.to_csv(options.data)
 
 
 if __name__ == "__main__":
