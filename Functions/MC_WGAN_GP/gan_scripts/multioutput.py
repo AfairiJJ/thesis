@@ -23,7 +23,7 @@ class MultiCategorical(nn.Module):
         for i, variable_size in enumerate(variable_sizes):
             if variable_size == 1:
                 self.output_layers.append(nn.Linear(input_size, variable_size))
-                self.output_activations.append(nn.LeakyReLU(negative_slope=1))
+                self.output_activations.append(F.hardtanh(min_val=0, max_val=1))
             else: 
                 self.output_layers.append(nn.Linear(input_size, variable_size))
                 self.output_activations.append(CategoricalActivation())
