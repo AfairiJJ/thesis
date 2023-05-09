@@ -5,13 +5,13 @@ Created on Mon Apr  1 10:22:17 2019
 @author: joshj
 """
 
-rom __future__ import print_function
+rom __future__
 
 import torch.nn as nn
 import torch
 import numpy as np
 import pandas as pd
-from gan_scripts.undo_dummy import back_from_dummies
+from Functions.original.utils.undo_dummy import back_from_dummies
 from patsy import dmatrices
 
 input_size = data_size               # Number of columns in data
