@@ -31,7 +31,7 @@ def train(generator,
           output_gen_path,
           output_disc_path,
           output_loss_path,
-          batch_size=1000,
+          batch_size=128,
           start_epoch=0,
           num_epochs=100,
           num_disc_steps=2,
@@ -154,7 +154,7 @@ def main():
 
     options_parser.add_argument(
         "--validation_proportion", type=float,
-        default=.1,
+        default=.01,
         help="Ratio of data for validation."
     )
 
@@ -176,7 +176,7 @@ def main():
     options_parser.add_argument(
         "--batch_size",
         type=int,
-        default=1000,
+        default=128,
         help="Amount of samples per batch."
     )
 
@@ -190,14 +190,14 @@ def main():
     options_parser.add_argument(
         "--num_epochs",
         type=int,
-        default=1000,
+        default=10000,
         help="Number of epochs."
     )
 
     options_parser.add_argument(
         "--l2_regularization",
         type=float,
-        default=0.0001,
+        default=0.00001,
         help="L2 regularization weight for every parameter."
     )
 
