@@ -23,7 +23,7 @@ class MultiCategorical(nn.Module):
         for i, variable_size in enumerate(variable_sizes):
             if variable_size == 1:
                 self.output_layers.append(nn.Linear(input_size, variable_size))
-                self.output_activations.append(nn.LeakyReLU(negative_slope=1))
+                self.output_activations.append(nn.Hardtanh(min_val=0, max_val=1))
             else: 
                 self.output_layers.append(nn.Linear(input_size, variable_size))
                 self.output_activations.append(CategoricalActivation())
@@ -32,7 +32,7 @@ class MultiCategorical(nn.Module):
         outputs = []
         for output_layer, output_activation in zip(self.output_layers, self.output_activations):
             logits = output_layer(inputs)
-            if type(output_activation) == torch.nn.modules.activation.LeakyReLU:
+            if type(output_activation) == torch.nn.modules.activation.Hardtanh:
                 output = output_activation(logits)
             else:
                 output = output_activation(logits, training=training, temperature=temperature)
