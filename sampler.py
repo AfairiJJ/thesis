@@ -84,9 +84,9 @@ def main():
 
     options = options_parser.parse_args()
 
-    options.generator = 'data/generators/generator_2023_05_09_23.pt'
+    options.generator = 'data/generators/generator_2023_05_10_00.pt'
     options.metadata = 'config/metadata.json'
-    options.num_samples = 100000
+    options.num_samples = 500000
     options.num_features = 52
     options.data = 'data/gan_generated/sample_no_ei.pickle'
 
