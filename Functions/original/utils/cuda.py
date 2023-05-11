@@ -3,7 +3,7 @@ import torch
 
 def to_cuda_if_available(*tensors):
     if torch.cuda.is_available():
-        tensors = [tensor.to('cpu') if tensor is not None else None for tensor in tensors]
+        tensors = [tensor.to('cuda') if tensor is not None else None for tensor in tensors]
     else:
         tensors = [tensor.to('cpu') if tensor is not None else None for tensor in tensors]
     if len(tensors) == 1:

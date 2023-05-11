@@ -84,7 +84,7 @@ def main():
 
     options = options_parser.parse_args()
 
-    options.generator = 'data/generators/generator_2023_05_10_00.pt'
+    options.generator = 'data/generators/generator_2023_05_10_01.pt'
     options.metadata = 'config/metadata.json'
     options.num_samples = 500000
     options.num_features = 52
