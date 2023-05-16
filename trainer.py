@@ -52,6 +52,7 @@ def trainn(generator,
            datacols = None,
            scaler = None
            ):
+    dev_gen_old = 9999999999
     generator, discriminator = to_cuda_if_available(generator, discriminator)
     optim_gen = Adam(generator.parameters(), weight_decay=l2_regularization, lr=learning_rate)
     optim_disc = Adam(discriminator.parameters(), weight_decay=l2_regularization, lr=learning_rate)
@@ -178,7 +179,10 @@ def trainn(generator,
 
             print(f'Poisson Deviance: Generated: {dev_gen}; Real: {dev_real}; Base: {dev_base}')
 
-            dev_gen_old =
+            if dev_gen < dev_gen_old:
+                torch.save(generator.state_dict(), output_gen_path)
+                torch.save(discriminator.state_dict(), output_disc_path)
+            dev_gen_old = dev_gen
 
             del dev_base
             del glm_gen
