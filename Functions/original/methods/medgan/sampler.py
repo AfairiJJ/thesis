@@ -20,8 +20,8 @@ def sample(autoencoder, generator, num_samples, num_features, batch_size=100, co
 
     autoencoder, generator = to_cuda_if_available(autoencoder, generator)
 
-    autoencoder.train(mode=False)
-    generator.train(mode=False)
+    autoencoder.trainn(mode=False)
+    generator.trainn(mode=False)
 
     samples = np.zeros((num_samples, num_features), dtype=np.float32)
 

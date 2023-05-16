@@ -106,9 +106,9 @@ def train_GAN2(generator,
                output_gen_optim_path = './saved_parameters/gen_optim2',
                output_fig_save_path = './saved_parameters/fig1'
                ):
-    autoencoder.train(mode=False)
-    generator.train(mode=True)
-    discriminator.train(mode=True)
+    autoencoder.trainn(mode=False)
+    generator.trainn(mode=True)
+    discriminator.trainn(mode=True)
     disc_losses = []
     gen_losses = []
     disc_loss = torch.tensor(9999)

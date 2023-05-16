@@ -28,7 +28,7 @@ class Generator(nn.Module):
 
     def batch_norm_train(self, mode=True):
         for batch_norm in self.batch_norms:
-            batch_norm.train(mode=mode)
+            batch_norm.trainn(mode=mode)
 
     def forward(self, noise):
         outputs = noise

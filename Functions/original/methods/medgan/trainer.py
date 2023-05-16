@@ -58,9 +58,9 @@ def train(autoencoder,
         logger.start_timer()
 
         # train
-        autoencoder.train(mode=True)
-        generator.train(mode=True)
-        discriminator.train(mode=True)
+        autoencoder.trainn(mode=True)
+        generator.trainn(mode=True)
+        discriminator.trainn(mode=True)
 
         disc_losses = []
         gen_losses = []
@@ -143,9 +143,9 @@ def train(autoencoder,
                 del gen_loss
 
         # validate discriminator
-        autoencoder.train(mode=False)
-        generator.train(mode=False)
-        discriminator.train(mode=False)
+        autoencoder.trainn(mode=False)
+        generator.trainn(mode=False)
+        discriminator.trainn(mode=False)
 
         correct = 0.0
         total = 0.0

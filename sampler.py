@@ -42,7 +42,7 @@ def sample(generator, num_samples, num_features, batch_size=100, noise_size=128)
     return samples
 
 
-def main():
+def generate_data():
     options_parser = argparse.ArgumentParser(description="Sample data with MedGAN.")
 
     # options_parser.add_argument("generator", type=str, help="Generator input file.")
@@ -71,7 +71,7 @@ def main():
     options_parser.add_argument(
         "--generator_hidden_sizes",
         type=str,
-        default="256,128",
+        default="128,128,128",
         help="Size of each hidden layer in the generator separated by commas (no spaces)."
     )
 
@@ -84,7 +84,7 @@ def main():
 
     options = options_parser.parse_args()
 
-    options.generator = 'data/generators/generator_2023_05_10_01.pt'
+    options.generator = 'data/generators/generator_2023_05_11_23.pt'
     options.metadata = 'config/metadata.json'
     options.num_samples = 500000
     options.num_features = 52
@@ -109,8 +109,4 @@ def main():
 
     print('Saving sample')
     data = pd.DataFrame(data)
-    data.to_pickle(options.data)
-
-
-if __name__ == "__main__":
-    main()
+    return data
