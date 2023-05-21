@@ -1,12 +1,16 @@
+import math
 import warnings
+from copy import deepcopy
 
-from Functions.dataprep import feature_generation, cap_claimnb
-from Functions.original.utils.cuda import to_cpu_if_available
+from sklearn.base import TransformerMixin
+from sklearn.model_selection import GroupShuffleSplit
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
+from Functions.original.utils.cuda import to_cpu_if_available, to_cuda_if_available
 from Functions.original.utils.undo_dummy import back_from_dummies
-from config.config import *
+import config.config as cc
 
 warnings.filterwarnings('ignore')
-from Functions import dataprep as prep
 from sklearn.datasets import fetch_openml
 import pandas as pd
 from sklearn import preprocessing
@@ -23,102 +27,65 @@ warnings.filterwarnings('ignore')
 
 import pandas as pd
 
-def prepare_alldata():
-    freq0 = fetch_openml(data_id=41214, as_frame=True).data
-    freq1 = prep.data_cleaning(freq0)
-    freq2 = prep.feature_generation(freq1)
+class Dummifier(TransformerMixin):
+    def __init__(self, convert_columns, drop_first):
+        self.convert_columns = convert_columns
+        self.drop_first = drop_first
 
-    train, test = prep.data_split_frequency_schelldorfer(freq2)
+    def fit(self, X, y=None):
+        return self
 
-    return train, test
+    def transform(self, X, y=None):
+        if 'ClaimNb' in self.convert_columns:
+            X['ClaimNb'] = X['ClaimNb'].astype('category')
+        else:
+            X['ClaimNb'] = claimnbtransform(X['ClaimNb'])
+        X = pd.get_dummies(X, columns=self.convert_columns, sparse=False, drop_first=self.drop_first)
+        return X
 
-def prepare_gandata(df1, cont_vars):
-    # Specific data preparation for GAN datasets
+    def inverse_transform(self, X, y=None):
+        X = back_from_dummies(X)
+        if 'ClaimNb' in X.columns:
+            X['ClaimNb'] = claimnbtransform(X['ClaimNb'])
+            X.loc[X['ClaimNb'] < 0, 'ClaimNb'] = 0
+            X.loc[X['ClaimNb'] > 4, 'ClaimNb'] = 4
 
-    cats_vars = ["ClaimNb",
-                 'VehBrand',
-                 'VehGas',
-                 'Region',
-                 'Area'
-                 ]
+        return X
 
-    df1[cont_vars] = df1[cont_vars].astype(float)
-    df1[cats_vars] = df1[cats_vars].astype('category')
+def claimnbtransform(col):
+ return col.astype(float).round().astype(int)
 
-    df2 = pd.get_dummies(df1[cont_vars + cats_vars])
+class ExpertInputter(TransformerMixin):
+    def fit(self, X, y=None):
+        self.density = self.build(X, 'ClaimNb ~ Density')
+        self.drivage = self.build(X, 'ClaimNb ~ DrivAge + I(DrivAge**2) + I(DrivAge**3) + I(DrivAge**4) + I(DrivAge**5)')
+        self.bonusmalus1 = self.build(X, 'ClaimNb ~ BonusMalus + I(BonusMalus**2)')
+        self.vehage = self.build(X, 'ClaimNb ~ VehAge + I(VehAge**2) + I(VehAge**3)')
+        self.bm_above_100 = X.loc[X['BonusMalus'] > 100, 'BonusMalus'].mean()
+        self.bm_below_100 = X.loc[X['BonusMalus'] <= 100, 'BonusMalus'].mean()
 
-    ss = preprocessing.MinMaxScaler()
-    df3 = pd.DataFrame(ss.fit_transform(df2), columns=df2.columns)
+        return self
 
-    assert df3['Exposure'].isna().sum() == 0, 'There should not be any empty exposures'
-    assert len(df3) == len(df2), 'Lengths shouldnt differ'
+    def transform(self, X, y=None):
+        # Isabella Input
+        X.loc[X['BonusMalus'] <= 100, 'EI_BonusMalus2'] = self.bm_above_100
+        X.loc[X['BonusMalus'] > 100, 'EI_BonusMalus2'] = self.bm_below_100
+        X['EI_Density'] = self.density.predict(X)
+        X['EI_DrivAge'] = self.drivage.predict(X)
+        X['EI_BonusMalus1'] = self.bonusmalus1.predict(X)
+        X['EI_VehAge'] = self.vehage.predict(X)
+        X.loc[X['VehAge'] <= 5, 'EI_VehAge'] = 0.05
 
-    return df3, ss
+        df = X
 
-def prepare_gandata_for_regression(df, ss):
-    dropcols = ['EI', 'GDV']
-    df = pd.DataFrame(ss.inverse_transform(df), columns=df.columns)
-    df = back_from_dummies(df)
-    df = df.drop(dropcols, axis='columns', errors='raise')
-    df['ClaimNb'] = df['ClaimNb'].astype('float').astype('int')
-    df = cap_claimnb(df)
-    df = to_cpu_if_available(df)
-    df = feature_generation(df)
-    # X = pd.get_dummies(X, drop_first=True)
-
-    return df
-
-def gan_to_regression(df):
-
-
-    return X, y
-
-def add_expertinput(train, test):
-    # Expert input from Isabella
-    def build_predict(train, test, formula):
-        glm1 = smf.glm(formula=formula, data=train, family=sm.families.Poisson(link=sm.families.links.log()),
-                       offset=np.log(train['Exposure'])).fit()
-        preds_train = glm1.predict(train, offset=np.log(train['Exposure']))
-        preds_test = glm1.predict(test, offset=np.log(test['Exposure']))
-
-        return preds_train, preds_test
-
-    train['EI_Density'], test['EI_Density'] = build_predict(train, test, 'ClaimNb ~ Density')  # GLM1, do not adjust
-
-    train['EI_DrivAge'], test['EI_DrivAge'] = build_predict(train, test,
-                                                            'ClaimNb ~ DrivAge + I(DrivAge**2) + I(DrivAge**3) + I(DrivAge**4) + I(DrivAge**5)')  # GLM5, do not adjust
-
-    train['EI_BonusMalus1'], test['EI_BonusMalus1'] = build_predict(train, test,
-                                                                    'ClaimNb ~ BonusMalus + I(BonusMalus**2)')
-
-    bm_below_100 = train.loc[train['BonusMalus'] <= 100, 'BonusMalus'].mean()
-    bm_above_100 = train.loc[train['BonusMalus'] > 100, 'BonusMalus'].mean()
-    train.loc[train['BonusMalus'] <= 100, 'EI_BonusMalus2'] = bm_below_100
-    test.loc[test['BonusMalus'] <= 100, 'EI_BonusMalus2'] = bm_below_100
-    train.loc[train['BonusMalus'] > 100, 'EI_BonusMalus2'] = bm_above_100
-    test.loc[test['BonusMalus'] > 100, 'EI_BonusMalus2'] = bm_above_100
-
-    train['EI_VehAge'], test['EI_VehAge'] = build_predict(train, test, 'ClaimNb ~ VehAge + I(VehAge**2) + I(VehAge**3)')
-
-    train.loc[train['VehAge'] <= 5, 'EI_VehAge'] = 0.05
-    test.loc[test['VehAge'] <= 5, 'EI_VehAge'] = 0.05
-
-    # %%
-    train.head()
-    # %%
-    train['ClaimNb'].describe()
-    # %%
-    # Expert Input from GDV
-
-    # Vehicle Power
-    for df in train, test:
+        # GDV input
         df['GDV_Area'] = df['Area'].copy(deep=True)
-        df['GDV_Area'] = df['GDV_Area'].replace('A', 38.5)
-        df['GDV_Area'] = df['GDV_Area'].replace('B', 41.5)
-        df['GDV_Area'] = df['GDV_Area'].replace('C', 43.5)
-        df['GDV_Area'] = df['GDV_Area'].replace('D', 46.5)
-        df['GDV_Area'] = df['GDV_Area'].replace('E', (49 + 55) / 2)
-        df['GDV_Area'] = df['GDV_Area'].replace('F', (58 + 65) / 2)
+        df['GDV_Area'] = df['GDV_Area'].replace(1, 38.5)
+        df['GDV_Area'] = df['GDV_Area'].replace(2, 41.5)
+        df['GDV_Area'] = df['GDV_Area'].replace(3, 43.5)
+        df['GDV_Area'] = df['GDV_Area'].replace(4, 46.5)
+        df['GDV_Area'] = df['GDV_Area'].replace(5, (49 + 55) / 2)
+        df['GDV_Area'] = df['GDV_Area'].replace(6, (58 + 65) / 2)
 
         # Vehicle Age
         df.loc[df['VehAge'] < 3, 'GDV_VehAge'] = 40
@@ -152,7 +119,91 @@ def add_expertinput(train, test):
         df.loc[df['DrivAge'].between(79, 81), 'GDV_DrivAge'] = 63
         df.loc[df['DrivAge'] >= 82, 'GDV_DrivAge'] = 74
 
-    assert 'GDV_Area' in train.columns
-    assert 'GDV_DrivAge' in train.columns
+        return df
 
-    return train, test
+    def build(self, df, formula):
+        glm = smf.glm(formula=formula, data=df, family=sm.families.Poisson(link=sm.families.links.log())).fit()
+        return glm
+
+class CommonPrep(TransformerMixin):
+    def __init__(self):
+        self.testsize = 0.2
+
+    def fit_transform(self, X, y=None):
+        X = self.dedupe(X)
+        X = self.clean(X)
+        df, test = self.split(X)
+        train, val = self.split(df)
+
+        return train, val, test
+
+    def dedupe(self, freq):
+        df_freq = freq.iloc[freq.drop(['IDpol', 'Exposure', 'ClaimNb'], axis=1).drop_duplicates().index]
+        df_freq = df_freq.reset_index(drop=True)
+        df_freq['GroupID'] = df_freq.index + 1
+        df_freq = pd.merge(freq, df_freq, how='left')
+        df_freq['GroupID'] = df_freq['GroupID'].fillna(method='ffill')
+
+        return df_freq
+
+    def clean(self, df):
+        df['ClaimNb'] = df['ClaimNb'].apply(lambda x: 4 if x > 4 else x)
+        df['Area'] = df['Area'].apply(lambda x: ord(x) - 64)
+        df['Density'] = df['Density'].apply(lambda x: round(math.log(x), 2)) # Changed, output was saved directly to Density, now output is saved to DensityGLM
+        return df
+
+    def split(self, df_freq, seed = cc.seed):
+        df_freq_glm = deepcopy(df_freq)
+        splitter = GroupShuffleSplit(test_size=self.testsize, n_splits=1, random_state=seed)
+        split = splitter.split(df_freq_glm, groups=df_freq_glm['GroupID'])
+        train_inds, test_inds = next(split)
+        train = df_freq_glm.iloc[train_inds]
+        test = df_freq_glm.iloc[test_inds]
+
+        return train, test
+
+class SpecificPrep(TransformerMixin):
+    def __init__(self, gan_cats, xgb_cats):
+        self.dummified_cols = None
+        self.scaler = MinMaxScaler(copy=True)
+        self.gan_dummifier = Dummifier(convert_columns=gan_cats, drop_first=False)
+        self.xgb_dummifier = Dummifier(convert_columns=xgb_cats, drop_first=True)
+        self.eier = ExpertInputter()
+
+    def fit(self, X, y=None):
+        self.undummified_cols = X.columns
+        self.eier.fit(X)
+        self.gan_dummifier.fit(X)
+        self.xgb_dummifier.fit(X)
+
+        X = self.eier.transform(X)
+        X = X[cc.vars]
+        X = self.gan_dummifier.transform(X)
+        self.dummified_cols = X.columns
+        self.scaler.fit(X)
+
+        return self
+
+    def transform(self, X, y=None):
+        X = self.eier.transform(X)
+        X = X[cc.vars]
+        X = self.gan_dummifier.transform(X)
+        X = pd.DataFrame(self.scaler.transform(X), columns=X.columns)
+
+        return X
+
+    def inverse_transform(self, X, y=None, verbose=False):
+        df = to_cpu_if_available(deepcopy(X))
+        df = pd.DataFrame(self.scaler.inverse_transform(df), columns=self.dummified_cols)
+        df = self.gan_dummifier.inverse_transform(df)
+        df = df.drop(['EI', 'GDV', 'Exposure'], axis='columns', errors='raise')
+        df = self.xgb_dummifier.transform(df)
+
+        return df
+
+
+
+
+
+
+

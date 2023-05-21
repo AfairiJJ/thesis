@@ -1,14 +1,15 @@
 from __future__ import print_function
 
 import torch.nn as nn
+import config.config as cc
 
 
 class Discriminator(nn.Module):
 
-    def __init__(self, input_size, hidden_sizes=(256, 128), bn_decay=0.01, critic=False):
+    def __init__(self, input_size, hidden_sizes, bn_decay=0.01, critic=False):
         super(Discriminator, self).__init__()
 
-        hidden_activation = nn.LeakyReLU(0.2)
+        hidden_activation = nn.LeakyReLU(cc.disc_leaky_param)
 
         previous_layer_size = input_size
         layers = []

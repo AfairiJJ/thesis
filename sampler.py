@@ -39,6 +39,7 @@ def sample(generator, num_samples, num_features, batch_size=100, noise_size=128)
 
         # move to next batch
         start = end
+
     return samples
 
 

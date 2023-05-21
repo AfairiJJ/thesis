@@ -1,26 +1,26 @@
 {
-  "variables": [
-    "VehPower", "VehAge", "DrivAge", "DensityGLM", "BonusMalus", "Exposure",
+  "variables": ["ClaimNb",
+    "VehPower", "VehAge", "DrivAge", "Density", "BonusMalus", "Exposure",
     "EI_Density", "EI_DrivAge", "EI_BonusMalus1", "EI_BonusMalus2", "EI_VehAge",
     "GDV_Area", "GDV_VehAge", "GDV_DrivAge",
-    "ClaimNb", "VehBrand", "VehGas", "Region", "Area"
+    "VehBrand", "VehGas", "Region", "Area"
   ],
 
-  "variable_types": [
+  "variable_types": ["numerical",
     "numerical", "numerical","numerical","numerical","numerical","numerical",
     "numerical", "numerical","numerical","numerical","numerical",
     "numerical", "numerical","numerical",
-    "categorical", "categorical", "categorical", "categorical", "categorical"
+    "categorical", "categorical", "categorical", "categorical"
   ],
 
-  "variable_sizes": [
+  "variable_sizes": [1,
     1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1,
     1, 1, 1,
-    5, 11, 2, 22, 6
+    11, 2, 22, 6
   ],
   "num_variables": 19,
   "num_binary_variables": 0,
-  "num_categorical_variables": 5,
-  "num_numerical_variables": 14
+  "num_categorical_variables": 4,
+  "num_numerical_variables": 15
 }
