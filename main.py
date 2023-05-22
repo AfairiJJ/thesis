@@ -5,6 +5,10 @@ from _1_DataPrep import CommonPrep, SpecificPrep
 import config.config as cc
 from trainer import trainnn
 
+import inspect
+
+print(inspect.getsource(cc))
+
 df = fetch_openml(data_id=41214, as_frame=True).data
 
 # GAN without expert input

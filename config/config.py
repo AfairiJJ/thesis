@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import torch.nn as nn
 
@@ -13,7 +13,7 @@ train_ganinput_noei = 'data/gan_dataprep/train_gan_noei.pickle'
 
 metadata = './config/metadata.json'
 
-dtnow = date.today().strftime('%Y%m%d')
+dtnow = datetime.now().strftime('%Y%m%d%H')
 output_generator = f'./data/generators/generator_{dtnow}.pt'
 output_discriminator = f'./data/discriminators/discriminator_{dtnow}.pt'
 output_loss = f'./data/losses/loss_{dtnow}.csv'
