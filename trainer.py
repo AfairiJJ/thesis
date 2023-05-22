@@ -63,6 +63,7 @@ def run_regression(train, test, specific):
 def trainn(generator,
            discriminator,
            train_data,
+           beginning,
            val_data,
            output_gen_path,
            output_disc_path,
@@ -72,7 +73,6 @@ def trainn(generator,
            num_epochs=cc.epochs,
            num_disc_steps=cc.disc_epochs, # From article
            num_gen_steps=cc.gen_epochs, # From article
-           l2_regularization=cc.l2_regularization,
            penalty=cc.loss_penalty, # From article
            specific = None
            ):
@@ -109,13 +109,17 @@ def trainn(generator,
 
         more_batches = True
         train_data_iterator = train_data.batch_iterator(batch_size)
+        beginning_data_iterator = beginning.batch_iterator(batch_size)
 
         while more_batches:
             # train discriminator
             for _ in range(num_disc_steps):
                 # next batch
                 try:
-                    batch = next(train_data_iterator)
+                    if epoch_index >= 1000:
+                        batch = next(train_data_iterator)
+                    else:
+                        batch = next(beginning_data_iterator)
                 except StopIteration:
                     more_batches = False
                     break
@@ -138,7 +142,6 @@ def trainn(generator,
                 fake_features = generator(noise, training=True)
                 fake_features = fake_features.detach()  # do not propagate to the generator
                 fake_pred = discriminator(fake_features)
-                #fake_loss = abs(fake_pred).mean(0).view(1)
                 fake_loss = fake_pred.mean(0).view(1) # 0->0 is best, 1->1 is worst
 
                 # Backward propagation
@@ -231,18 +234,16 @@ def trainn(generator,
     logger.close()
 
 
-def trainnn(train_data, val_data, specific):
+def trainnn(train_data, val_data, specific, beginning):
     myseed = 1
     np.random.seed(myseed)
     torch.manual_seed(myseed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(myseed)
 
-    train_data = train_data.to_numpy()
-    train_data = train_data.astype(np.float32)
-
-    train_data = Dataset(train_data)
-    val_data = Dataset(val_data)
+    beginning = Dataset(beginning.to_numpy().astype(np.float32))
+    train_data = Dataset(train_data.to_numpy().astype(np.float32))
+    val_data = Dataset(val_data.to_numpy().astype(np.float32))
 
     variable_sizes = load_variable_sizes_from_metadata(cc.metadata)
 
@@ -272,6 +273,7 @@ def trainnn(train_data, val_data, specific):
         generator,
         discriminator,
         train_data,
+        beginning,
         val_data,
         cc.output_generator,
         cc.output_discriminator,

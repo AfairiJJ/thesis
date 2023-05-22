@@ -1,4 +1,6 @@
 from datetime import date
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+import torch.nn as nn
 
 train_common = './data/common_dataprep/train.pickle'
 test_common = './data/common_dataprep/test.pickle'
@@ -18,11 +20,12 @@ output_loss = f'./data/losses/loss_{dtnow}.csv'
 
 
 
-vars = [ "ClaimNb",
-         "VehPower", "VehAge", "DrivAge", "Density", "BonusMalus", "Exposure",
+vars = [
+    "VehPower", "VehAge", "DrivAge", "Density", "BonusMalus", "Exposure",
     "EI_Density", "EI_DrivAge", "EI_BonusMalus1", "EI_BonusMalus2", "EI_VehAge",
     "GDV_Area", "GDV_VehAge", "GDV_DrivAge",
-    "VehBrand", "VehGas", "Region", "Area"]
+    "VehBrand", "VehGas", "Region", "Area",
+"ClaimNb"]
 
 cats_vars_xgb = [
              'VehBrand',
@@ -31,10 +34,11 @@ cats_vars_xgb = [
              'Area'
              ]
 
-
+scaler_ei = MinMaxScaler # Cannot do different scaler since we need 0,1 (or we improve standard scaler to work!
+continuous_activation = nn.LeakyReLU
 
 num_samples = 500000
-num_features = 56
+num_features = 60
 
 seed = 1
 testsize = 0.2
@@ -51,11 +55,11 @@ disc_leaky_param = 0.2 # Both
 
 learning_rate = 0.01 # Article: 0.01, Code: 0.001 (not good)
 hiddens_gen = [100,100,100]
-hiddens_disc = [55,55]
+hiddens_disc = [100]
 
 l2_regularization = 0 # Article: 0, # Code: 0.1
 gen_l2_regularization = l2_regularization
-noise_size = 100 # z-size, Code: 100
+noise_size = 60 # z-size, Code: 100
 critic = False
 disc_bn_decay = 0 if critic else 0.01 # Aritlce: 0.01, Code: 0.2
 
@@ -63,10 +67,11 @@ disc_l2_regularization = l2_regularization
 disc_learning_rate = learning_rate
 gen_learning_rate = learning_rate
 
-penalty = 1 ## deals with gradiant penalty
 
 
 
 # Generator tuning
-cats_vars_gan = cats_vars_xgb# + ['ClaimNb']
+cats_vars_gan = cats_vars_xgb + ['ClaimNb']
+
+
 

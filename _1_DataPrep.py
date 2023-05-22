@@ -4,7 +4,6 @@ from copy import deepcopy
 
 from sklearn.base import TransformerMixin
 from sklearn.model_selection import GroupShuffleSplit
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 from Functions.original.utils.cuda import to_cpu_if_available, to_cuda_if_available
 from Functions.original.utils.undo_dummy import back_from_dummies
@@ -165,7 +164,7 @@ class CommonPrep(TransformerMixin):
 class SpecificPrep(TransformerMixin):
     def __init__(self, gan_cats, xgb_cats):
         self.dummified_cols = None
-        self.scaler = MinMaxScaler(copy=True)
+        self.scaler = cc.MinMaxScaler(copy=True, feature_range=(0, 1))
         self.gan_dummifier = Dummifier(convert_columns=gan_cats, drop_first=False)
         self.xgb_dummifier = Dummifier(convert_columns=xgb_cats, drop_first=True)
         self.eier = ExpertInputter()
