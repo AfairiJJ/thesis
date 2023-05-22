@@ -49,9 +49,9 @@ def run_regression(train, test, specific):
 
     assert len(train1.columns) == len(test1.columns)
     print(f"ClaimNb Mean: {train1['ClaimNb'].mean()}")
-    xgb_model.fit(train1.drop('ClaimNb', 1), train1['ClaimNb'])
+    xgb_model.fit(train1.drop(labels='ClaimNb', axis=1), train1['ClaimNb'])
 
-    preds = xgb_model.predict(test1.drop('ClaimNb', 1))
+    preds = xgb_model.predict(test1.drop(labels='ClaimNb', axis=1))
 
     dev_mod = metrics.poisson_deviance(preds, test1['ClaimNb'])
     dev_base = metrics.poisson_deviance([train1['ClaimNb'].mean()] * len(test1), test1['ClaimNb'])

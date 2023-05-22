@@ -55,7 +55,7 @@ disc_leaky_param = 0.2 # Both
 
 learning_rate = 0.01 # Article: 0.01, Code: 0.001 (not good)
 hiddens_gen = [100,100,100]
-hiddens_disc = [100, 100]
+hiddens_disc = [55, 55]
 round_with_beginning_set = -1
 
 l2_regularization = 0.00001 # Article: 0, # Code: 0.1
