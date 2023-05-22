@@ -192,6 +192,7 @@ class SpecificPrep(TransformerMixin):
         return X
 
     def inverse_transform(self, X, y=None, verbose=False):
+        df = X
         df = pd.DataFrame(self.scaler.inverse_transform(df), columns=self.dummified_cols)
         df = self.gan_dummifier.inverse_transform(df)
         df = df.drop(['EI', 'GDV', 'Exposure'], axis='columns', errors='raise')
