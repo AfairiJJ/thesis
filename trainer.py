@@ -116,7 +116,7 @@ def trainn(generator,
             for _ in range(num_disc_steps):
                 # next batch
                 try:
-                    if epoch_index >= 1000:
+                    if epoch_index >= cc.round_with_beginning_set:
                         batch = next(train_data_iterator)
                     else:
                         batch = next(beginning_data_iterator)
@@ -133,9 +133,6 @@ def trainn(generator,
                 # real_loss = abs(real_pred - 0.9).mean(0).view(1)
                 real_loss = - real_pred.mean(0).view(1) # 0->0 is worst, 1->-1 is best
 
-                # Backward propagation
-                real_loss.backward()
-
                 # then train the discriminator only with fake data
                 noise = Variable(torch.FloatTensor(len(batch), cc.noise_size).normal_())
                 noise = to_cuda_if_available(noise)
@@ -144,11 +141,12 @@ def trainn(generator,
                 fake_pred = discriminator(fake_features)
                 fake_loss = fake_pred.mean(0).view(1) # 0->0 is best, 1->1 is worst
 
-                # Backward propagation
-                fake_loss.backward()
-
                 # this is the magic from WGAN-GP
                 gradient_penalty = calculate_gradient_penalty(discriminator, penalty, real_features, fake_features)
+
+                # Backward propagation
+                real_loss.backward()
+                fake_loss.backward()
                 gradient_penalty.backward()
 
                 # finally update the discriminator weights
