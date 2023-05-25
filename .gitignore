@@ -162,6 +162,5 @@ cython_debug/
 #.idea/
 
 # MINE
-/data/generators/
 /data/discriminators/
 /data/losses/

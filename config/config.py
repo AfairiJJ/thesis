@@ -50,8 +50,8 @@ epochs = 15000
 batch_size = 128 # Article: 128, Code: 1500 (not good)
 disc_epochs = 2 # Both
 gen_epochs = 1 # Both
-loss_penalty = 0.1 # Article: 10, Code: 1
-gen_bn_decay = .9 # Article: 0.9, Code: 0.25
+loss_penalty = 1 # Article: 10, Code: 1
+gen_bn_decay = .5 # Article: 0.9, Code: 0.25
 disc_leaky_param = 0.2 # Both
 
 learning_rate = 0.01 # Article: 0.01, Code: 0.001 (not good)
