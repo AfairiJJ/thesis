@@ -50,7 +50,7 @@ batch_size = 128 # Article: 128, Code: 1500 (not good)
 disc_epochs = 2 # Both
 gen_epochs = 1 # Both
 loss_penalty = 1 # Article: 10, Code: 1
-gen_bn_decay = .9 # Article: 0.9, Code: 0.25
+gen_bn_decay = .5 # Article: 0.9, Code: 0.25
 disc_leaky_param = 0.2 # Both
 
 learning_rate = 0.01 # Article: 0.01, Code: 0.001 (not good)
@@ -60,7 +60,7 @@ round_with_beginning_set = -1
 
 l2_regularization = 0.00001 # Article: 0, # Code: 0.1
 gen_l2_regularization = l2_regularization
-noise_size = 60 # z-size, Code: 100
+noise_size = 75 # z-size, Code: 100
 critic = True
 disc_bn_decay = 0 if critic else 0.01 # Aritlce: 0.01, Code: 0.2
 
