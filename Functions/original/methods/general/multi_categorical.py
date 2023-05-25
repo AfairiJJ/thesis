@@ -27,7 +27,7 @@ class MultiCategorical(nn.Module):
                 if cc.continuous_activation == torch.nn.modules.activation.LeakyReLU:
                     self.output_activations.append(cc.continuous_activation(negative_slope=0.01))
                 else:
-                    self.output_activations.append(cc.continuous_activation(min_val=0, max_val = 1))
+                    self.output_activations.append(cc.continuous_activation())
             else: 
                 self.output_layers.append(nn.Linear(input_size, variable_size))
                 self.output_activations.append(CategoricalActivation())
@@ -36,7 +36,7 @@ class MultiCategorical(nn.Module):
         outputs = []
         for output_layer, output_activation in zip(self.output_layers, self.output_activations):
             logits = output_layer(inputs)
-            if type(output_activation) in [torch.nn.modules.activation.LeakyReLU, torch.nn.modules.activation.Hardtanh]:
+            if type(output_activation) in [torch.nn.modules.activation.LeakyReLU, torch.nn.modules.activation.Sigmoid]:
                 output = output_activation(logits)
             else:
                 output = output_activation(logits, training=training, temperature=temperature)
