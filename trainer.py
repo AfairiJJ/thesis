@@ -53,6 +53,17 @@ def run_regression(train, test, specific):
 
     preds = xgb_model.predict(test1.drop(labels='ClaimNb', axis=1))
 
+    # Plotting stuff
+    plt_df = test1.copy(deep=True)
+    plt_df['preds'] = preds
+    plt_df = plt_df.groupby('DrivAge')['preds'].mean()
+    plt_df.plot()
+    plt.show()
+
+    train1['DrivAge'].hist()
+    test1['DrivAge'].hist()
+    plt.show()
+
     dev_mod = metrics.poisson_deviance(preds, test1['ClaimNb'])
     dev_base = metrics.poisson_deviance([train1['ClaimNb'].mean()] * len(test1), test1['ClaimNb'])
     dev_mae = mean_absolute_error(test1['ClaimNb'], preds)
@@ -212,14 +223,16 @@ def trainn(generator,
 
             devs += [dev_gen]
             epochs += [epoch_index]
-            plt.plot(epochs, devs)
-            plt.show()
+            if ((epoch_index % cc.show_plots_rounds) == 0):
+                plt.plot(epochs, devs)
+                plt.show()
 
-            plt.plot(epochs_general, disclosses_general) # BLUE
-            plt.plot(epochs_general, genlosses_general) # ORANGE
-            plt.show()
+                plt.plot(epochs_general, disclosses_general) # BLUE
+                plt.plot(epochs_general, genlosses_general) # ORANGE
+                plt.show()
 
             if dev_gen < dev_gen_old:
+                print(f'Saving model since best model found, with deviation: {dev_gen}')
                 torch.save(generator.state_dict(), output_gen_path)
                 torch.save(discriminator.state_dict(), output_disc_path)
             dev_gen_old = dev_gen
