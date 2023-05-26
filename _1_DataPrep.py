@@ -1,30 +1,26 @@
 import math
-import warnings
 from copy import deepcopy
 
 from sklearn.base import TransformerMixin
 from sklearn.model_selection import GroupShuffleSplit
+from sklearn.preprocessing import StandardScaler
 
-from Functions.original.utils.cuda import to_cpu_if_available, to_cuda_if_available
 from Functions.original.utils.undo_dummy import back_from_dummies
 import config.config as cc
 
-warnings.filterwarnings('ignore')
-from sklearn.datasets import fetch_openml
 import pandas as pd
-from sklearn import preprocessing
-
 pd.set_option('display.float_format', lambda x: '%.2f' % x)
 
 import warnings
 
-import numpy as np
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 
 warnings.filterwarnings('ignore')
 
-import pandas as pd
+
+def claimnb_as_int(col):
+ return col.astype(float).round().astype(int)
 
 class Dummifier(TransformerMixin):
     def __init__(self, convert_columns, drop_first):
@@ -35,24 +31,21 @@ class Dummifier(TransformerMixin):
         return self
 
     def transform(self, X, y=None):
+        X = X.copy(deep=True)
         if 'ClaimNb' in self.convert_columns:
             X['ClaimNb'] = X['ClaimNb'].astype('category')
         else:
-            X['ClaimNb'] = claimnbtransform(X['ClaimNb'])
+            X['ClaimNb'] = claimnb_as_int(X['ClaimNb'])
         X = pd.get_dummies(X, columns=self.convert_columns, sparse=False, drop_first=self.drop_first)
         return X
 
     def inverse_transform(self, X, y=None):
+        X = X.copy(deep=True)
         X = back_from_dummies(X)
         if 'ClaimNb' in X.columns:
-            X['ClaimNb'] = claimnbtransform(X['ClaimNb'])
-            X.loc[X['ClaimNb'] < 0, 'ClaimNb'] = 0
-            X.loc[X['ClaimNb'] > 4, 'ClaimNb'] = 4
+            X['ClaimNb'] = claimnb_as_int(X['ClaimNb'])
 
         return X
-
-def claimnbtransform(col):
- return col.astype(float).round().astype(int)
 
 class ExpertInputter(TransformerMixin):
     def fit(self, X, y=None):
@@ -66,6 +59,8 @@ class ExpertInputter(TransformerMixin):
         return self
 
     def transform(self, X, y=None):
+        X = X.copy(deep=True)
+
         # Isabella Input
         X.loc[X['BonusMalus'] <= 100, 'EI_BonusMalus2'] = self.bm_above_100
         X.loc[X['BonusMalus'] > 100, 'EI_BonusMalus2'] = self.bm_below_100
@@ -77,46 +72,46 @@ class ExpertInputter(TransformerMixin):
 
         df = X
 
-        # GDV input
-        df['GDV_Area'] = df['Area'].copy(deep=True)
-        df['GDV_Area'] = df['GDV_Area'].replace(1, 38.5)
-        df['GDV_Area'] = df['GDV_Area'].replace(2, 41.5)
-        df['GDV_Area'] = df['GDV_Area'].replace(3, 43.5)
-        df['GDV_Area'] = df['GDV_Area'].replace(4, 46.5)
-        df['GDV_Area'] = df['GDV_Area'].replace(5, (49 + 55) / 2)
-        df['GDV_Area'] = df['GDV_Area'].replace(6, (58 + 65) / 2)
-
-        # Vehicle Age
-        df.loc[df['VehAge'] < 3, 'GDV_VehAge'] = 40
-        df.loc[df['VehAge'] == 3, 'GDV_VehAge'] = 44
-        df.loc[df['VehAge'].between(4, 5), 'GDV_VehAge'] = 46
-        df.loc[df['VehAge'].between(6, 7), 'GDV_VehAge'] = 49
-        df.loc[df['VehAge'] == 8, 'GDV_VehAge'] = 51
-        df.loc[df['VehAge'] == 9, 'GDV_VehAge'] = 53
-        df.loc[df['VehAge'].between(10, 11), 'GDV_VehAge'] = 57
-        df.loc[df['VehAge'] == 12, 'GDV_VehAge'] = 61
-        df.loc[df['VehAge'].between(13, 15), 'GDV_VehAge'] = 66
-        df.loc[df['VehAge'].between(16, 17), 'GDV_VehAge'] = 69
-        df.loc[df['VehAge'].between(18, 22), 'GDV_VehAge'] = 69
-        df.loc[df['VehAge'] >= 23, 'GDV_VehAge'] = 34
-
-        # Driver Age
-        df.loc[df['DrivAge'] <= 18, 'GDV_DrivAge'] = 97
-        df.loc[df['DrivAge'] == 19, 'GDV_DrivAge'] = 84
-        df.loc[df['DrivAge'] == 20, 'GDV_DrivAge'] = 75
-        df.loc[df['DrivAge'].between(21, 22), 'GDV_DrivAge'] = 67
-        df.loc[df['DrivAge'].between(23, 24), 'GDV_DrivAge'] = 59
-        df.loc[df['DrivAge'].between(25, 26), 'GDV_DrivAge'] = 67
-        df.loc[df['DrivAge'].between(27, 41), 'GDV_DrivAge'] = 47
-        df.loc[df['DrivAge'].between(42, 62), 'GDV_DrivAge'] = 37
-        df.loc[df['DrivAge'].between(63, 67), 'GDV_DrivAge'] = 37
-        df.loc[df['DrivAge'].between(68, 70), 'GDV_DrivAge'] = 40
-        df.loc[df['DrivAge'].between(71, 72), 'GDV_DrivAge'] = 44
-        df.loc[df['DrivAge'].between(73, 74), 'GDV_DrivAge'] = 48
-        df.loc[df['DrivAge'].between(75, 76), 'GDV_DrivAge'] = 54
-        df.loc[df['DrivAge'].between(77, 78), 'GDV_DrivAge'] = 58
-        df.loc[df['DrivAge'].between(79, 81), 'GDV_DrivAge'] = 63
-        df.loc[df['DrivAge'] >= 82, 'GDV_DrivAge'] = 74
+        # # GDV input
+        # df['GDV_Area'] = df['Area'].copy(deep=True)
+        # df['GDV_Area'] = df['GDV_Area'].replace(1, 38.5)
+        # df['GDV_Area'] = df['GDV_Area'].replace(2, 41.5)
+        # df['GDV_Area'] = df['GDV_Area'].replace(3, 43.5)
+        # df['GDV_Area'] = df['GDV_Area'].replace(4, 46.5)
+        # df['GDV_Area'] = df['GDV_Area'].replace(5, (49 + 55) / 2)
+        # df['GDV_Area'] = df['GDV_Area'].replace(6, (58 + 65) / 2)
+        #
+        # # Vehicle Age
+        # df.loc[df['VehAge'] < 3, 'GDV_VehAge'] = 40
+        # df.loc[df['VehAge'] == 3, 'GDV_VehAge'] = 44
+        # df.loc[df['VehAge'].between(4, 5), 'GDV_VehAge'] = 46
+        # df.loc[df['VehAge'].between(6, 7), 'GDV_VehAge'] = 49
+        # df.loc[df['VehAge'] == 8, 'GDV_VehAge'] = 51
+        # df.loc[df['VehAge'] == 9, 'GDV_VehAge'] = 53
+        # df.loc[df['VehAge'].between(10, 11), 'GDV_VehAge'] = 57
+        # df.loc[df['VehAge'] == 12, 'GDV_VehAge'] = 61
+        # df.loc[df['VehAge'].between(13, 15), 'GDV_VehAge'] = 66
+        # df.loc[df['VehAge'].between(16, 17), 'GDV_VehAge'] = 69
+        # df.loc[df['VehAge'].between(18, 22), 'GDV_VehAge'] = 69
+        # df.loc[df['VehAge'] >= 23, 'GDV_VehAge'] = 34
+        #
+        # # Driver Age
+        # df.loc[df['DrivAge'] <= 18, 'GDV_DrivAge'] = 97
+        # df.loc[df['DrivAge'] == 19, 'GDV_DrivAge'] = 84
+        # df.loc[df['DrivAge'] == 20, 'GDV_DrivAge'] = 75
+        # df.loc[df['DrivAge'].between(21, 22), 'GDV_DrivAge'] = 67
+        # df.loc[df['DrivAge'].between(23, 24), 'GDV_DrivAge'] = 59
+        # df.loc[df['DrivAge'].between(25, 26), 'GDV_DrivAge'] = 67
+        # df.loc[df['DrivAge'].between(27, 41), 'GDV_DrivAge'] = 47
+        # df.loc[df['DrivAge'].between(42, 62), 'GDV_DrivAge'] = 37
+        # df.loc[df['DrivAge'].between(63, 67), 'GDV_DrivAge'] = 37
+        # df.loc[df['DrivAge'].between(68, 70), 'GDV_DrivAge'] = 40
+        # df.loc[df['DrivAge'].between(71, 72), 'GDV_DrivAge'] = 44
+        # df.loc[df['DrivAge'].between(73, 74), 'GDV_DrivAge'] = 48
+        # df.loc[df['DrivAge'].between(75, 76), 'GDV_DrivAge'] = 54
+        # df.loc[df['DrivAge'].between(77, 78), 'GDV_DrivAge'] = 58
+        # df.loc[df['DrivAge'].between(79, 81), 'GDV_DrivAge'] = 63
+        # df.loc[df['DrivAge'] >= 82, 'GDV_DrivAge'] = 74
 
         return df
 
@@ -128,7 +123,12 @@ class CommonPrep(TransformerMixin):
     def __init__(self):
         self.testsize = 0.2
 
-    def fit_transform(self, X, y=None):
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X, y=None):
+        X = X.copy(deep=True)
+
         X = self.dedupe(X)
         X = self.clean(X)
         df, test = self.split(X)
@@ -145,13 +145,19 @@ class CommonPrep(TransformerMixin):
 
         return df_freq
 
-    def clean(self, df):
-        df['ClaimNb'] = df['ClaimNb'].apply(lambda x: 4 if x > 4 else x)
-        df['Area'] = df['Area'].apply(lambda x: ord(x) - 64)
-        df['Density'] = df['Density'].apply(lambda x: round(math.log(x), 2)) # Changed, output was saved directly to Density, now output is saved to DensityGLM
-        return df
+    def clean(self, df_freq):
+        df_freq = df_freq.copy(deep=True)
+        df_freq['ClaimNb'] = df_freq['ClaimNb'].apply(lambda x: 4 if x > 4 else x)
+        df_freq['Area'] = df_freq['Area'].apply(lambda x: ord(x) - 64)
+        df_freq['VehAge'] = df_freq['VehAge'].apply(lambda x: 20 if x > 20 else x)
+        df_freq['DrivAge'] = df_freq['DrivAge'].apply(lambda x: 90 if x > 90 else x)
+        df_freq['BonusMalus'] = df_freq['BonusMalus'].apply(lambda x: 150 if x > 150 else int(x))
+        df_freq['Density'] = df_freq['Density'].apply(lambda x: round(math.log(x), 2))
+        df_freq['Exposure'] = df_freq['Exposure'].apply(lambda x: 1. if x > 1 else x)
+        df_freq['VehPower'] = df_freq['VehPower'].apply(lambda x: 9 if x > 9 else x)
+        return df_freq
 
-    def split(self, df_freq, seed = cc.seed):
+    def split(self, df_freq, seed = cc.params['seed']):
         df_freq_glm = deepcopy(df_freq)
         splitter = GroupShuffleSplit(test_size=self.testsize, n_splits=1, random_state=seed)
         split = splitter.split(df_freq_glm, groups=df_freq_glm['GroupID'])
@@ -161,22 +167,39 @@ class CommonPrep(TransformerMixin):
 
         return train, test
 
+class MyStandardScaler(TransformerMixin):
+    def __init__(self):
+        self.scaler = StandardScaler(copy=True)
+        self.columns_to_scale = cc.metadata['standardized_vars']
+    def fit(self, X, y=None):
+        self.scaler = self.scaler.fit(X[self.columns_to_scale])
+        return self
+
+    def transform(self, X, y=None):
+        X = X.copy(deep=True)
+
+        X[self.columns_to_scale] = self.scaler.transform(X[self.columns_to_scale])
+        return X
+
+    def inverse_transform(self, X, y=None):
+        X[self.columns_to_scale] = self.scaler.inverse_transform(X[self.columns_to_scale])
+        return X
+
 class SpecificPrep(TransformerMixin):
     def __init__(self, gan_cats, xgb_cats):
         self.dummified_cols = None
-        self.scaler = cc.MinMaxScaler(copy=True, feature_range=(0, 1))
+        self.scaler = MyStandardScaler()
         self.gan_dummifier = Dummifier(convert_columns=gan_cats, drop_first=False)
         self.xgb_dummifier = Dummifier(convert_columns=xgb_cats, drop_first=True)
         self.eier = ExpertInputter()
 
     def fit(self, X, y=None):
-        self.undummified_cols = X.columns
         self.eier.fit(X)
         self.gan_dummifier.fit(X)
         self.xgb_dummifier.fit(X)
 
         X = self.eier.transform(X)
-        X = X[cc.vars]
+        X = X[cc.metadata['variables']]
         X = self.gan_dummifier.transform(X)
         self.dummified_cols = X.columns
         self.scaler.fit(X)
@@ -184,18 +207,21 @@ class SpecificPrep(TransformerMixin):
         return self
 
     def transform(self, X, y=None):
+        X = X.copy(deep=True)
+
         X = self.eier.transform(X)
-        X = X[cc.vars]
+        X = X[cc.metadata['variables']]
         X = self.gan_dummifier.transform(X)
-        X = pd.DataFrame(self.scaler.transform(X), columns=X.columns)
+        X = self.scaler.transform(X)
 
         return X
 
-    def inverse_transform(self, X, y=None, verbose=False):
-        df = X
-        df = pd.DataFrame(self.scaler.inverse_transform(df), columns=self.dummified_cols)
+    def inverse_transform(self, X, y=None):
+        df = pd.DataFrame(X).copy(deep=True)
+        df.columns = self.dummified_cols
+        df = self.scaler.inverse_transform(df)
         df = self.gan_dummifier.inverse_transform(df)
-        df = df.drop(['EI', 'GDV', 'Exposure'], axis='columns', errors='raise')
+        df = df.drop(['EI', 'GDV', 'Exposure'], axis='columns', errors='ignore')
         df = self.xgb_dummifier.transform(df)
 
         return df

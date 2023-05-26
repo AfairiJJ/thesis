@@ -57,7 +57,7 @@ def pre_train(autoencoder,
 
 
 def pre_train_epoch(autoencoder, data, batch_size, optim=None, variable_sizes=None, temperature=None):
-    autoencoder.trainn(mode=(optim is not None))
+    autoencoder.train_generator(mode=(optim is not None))
 
     training = optim is not None
 

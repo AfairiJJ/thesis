@@ -164,8 +164,8 @@ def main():
     epochs = 20000
     disc_epochs = 2
     gen_epochs = 1
-    generator.trainn(mode=True)
-    discriminator.trainn(mode=True)
+    generator.train_generator(mode=True)
+    discriminator.train_generator(mode=True)
     disc_losses = []
     gen_losses = []
     pois_metric = []

@@ -17,7 +17,7 @@ from multi_categorical_gans.utils.cuda import to_cuda_if_available, to_cpu_if_av
 def sample(generator, temperature, num_samples, num_features, batch_size=100, noise_size=128):
     generator = to_cuda_if_available(generator)
 
-    generator.trainn(mode=False)
+    generator.train_generator(mode=False)
 
     samples = np.zeros((num_samples, num_features), dtype=np.float32)
 

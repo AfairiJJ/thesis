@@ -6,10 +6,10 @@ import config.config as cc
 
 class Discriminator(nn.Module):
 
-    def __init__(self, input_size, hidden_sizes, bn_decay=0.01, critic=False):
+    def __init__(self, input_size, hidden_sizes, bn_decay, critic, leaky_param):
         super(Discriminator, self).__init__()
 
-        hidden_activation = nn.LeakyReLU(cc.disc_leaky_param)
+        hidden_activation = nn.LeakyReLU(leaky_param)
 
         previous_layer_size = input_size
         layers = []
@@ -31,3 +31,4 @@ class Discriminator(nn.Module):
 
     def forward(self, inputs):
         return self.model(inputs).view(-1)
+

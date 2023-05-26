@@ -149,8 +149,8 @@ def train_GAN2(generator,
                output_fig_save_path = './saved_parameters/fig1',
                output_data_save_path = './saved_parameters/data_generator2'
                ):
-    generator.trainn(mode=True)
-    discriminator.trainn(mode=True)
+    generator.train_generator(mode=True)
+    discriminator.train_generator(mode=True)
     disc_losses = []
     gen_losses = []
     pois_metric = []

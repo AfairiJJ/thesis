@@ -13,7 +13,6 @@ import torch.nn.functional as F
 from torch.distributions.one_hot_categorical import OneHotCategorical
 import config.config as cc
 
-
 class MultiCategorical(nn.Module):
 
     def __init__(self, input_size, variable_sizes):
@@ -24,10 +23,7 @@ class MultiCategorical(nn.Module):
         for i, variable_size in enumerate(variable_sizes):
             if variable_size == 1:
                 self.output_layers.append(nn.Linear(input_size, variable_size))
-                if cc.continuous_activation == torch.nn.modules.activation.LeakyReLU:
-                    self.output_activations.append(cc.continuous_activation(negative_slope=0.01))
-                else:
-                    self.output_activations.append(cc.continuous_activation())
+                self.output_activations.append(nn.LeakyReLU(negative_slope=1))
             else: 
                 self.output_layers.append(nn.Linear(input_size, variable_size))
                 self.output_activations.append(CategoricalActivation())

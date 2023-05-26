@@ -6,11 +6,6 @@ import torch
 import torch.nn.functional as F
 
 
-def load_variable_sizes_from_metadata(metadata_path):
-    with open(metadata_path, "r") as metadata_file:
-        metadata = json.load(metadata_file)
-    return metadata["variable_sizes"]
-
 
 def categorical_variable_loss(reconstructed, original, variable_sizes):
     # by default use loss.csv for binary variables

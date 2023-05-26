@@ -3,66 +3,10 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="/Functions/MC_WGAN_GP/datasets/cat_policy_dat.csv">
+        <entry key="/config/ganruns.csv">
           <value>
             <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/Functions/MC_WGAN_GP/datasets/policy_dat_v2.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/Functions/MC_WGAN_GP/training_iterations/iteration_records/190318_runs.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/Functions/MC_WGAN_GP/training_iterations/iteration_records/190325_runs.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/Functions/MC_WGAN_GP/training_iterations/iteration_records/190326_runs.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/Functions/MC_WGAN_GP/training_iterations/iteration_records/190326_runs_multi.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/Functions/MC_WGAN_GP/training_iterations/iteration_records/190327_multi.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/Functions/MC_WGAN_GP/training_iterations/iteration_records/190328_single.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/Functions/MC_WGAN_GP/training_iterations/iteration_records/flexible_template.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
+              <option name="separator" value=";" />
             </Attribute>
           </value>
         </entry>
