@@ -255,6 +255,8 @@ def train_generator(generator,
                 cc.setparams(modelid=cc.params['sim_num'], param='lowest_mae', value=dev_mae)
                 cc.setparams(modelid=cc.params['sim_num'], param='lowest_rmse', value=dev_rmse)
                 cc.setparams(modelid=cc.params['sim_num'], param='epoch_found', value=epoch_index)
+                torch.save(generator.state_dict(), output_gen_path + '_inbetween')
+                torch.save(discriminator.state_dict(), output_disc_path + '_inbetween')
             # if ((epoch_index % cc.show_plots_rounds) == 0):
             #     plt.plot(plotting_epochs, devs_poisson)
             #     plt.show()
@@ -265,6 +267,7 @@ def train_generator(generator,
 
             torch.save(generator.state_dict(), output_gen_path)
             torch.save(discriminator.state_dict(), output_disc_path)
+
             with open(cc.params['output_rundata'], 'wb') as f:
                 pickle.dump(obj=trackers, file=f)
 
@@ -284,6 +287,7 @@ def run_training(train_data, val_data, specific, beginning, myseed = cc.params['
     np.random.seed(myseed)
     torch.manual_seed(myseed)
     if torch.cuda.is_available():
+        print('CUDA IS AVAILABLE')
         torch.cuda.manual_seed_all(myseed)
 
     beginning = Dataset(beginning.to_numpy().astype(np.float32))
