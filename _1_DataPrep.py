@@ -53,8 +53,8 @@ class ExpertInputter(TransformerMixin):
         self.drivage = self.build(X, 'ClaimNb ~ DrivAge + I(DrivAge**2) + I(DrivAge**3) + I(DrivAge**4) + I(DrivAge**5)')
         self.bonusmalus1 = self.build(X, 'ClaimNb ~ BonusMalus + I(BonusMalus**2)')
         self.vehage = self.build(X, 'ClaimNb ~ VehAge + I(VehAge**2) + I(VehAge**3)')
-        self.bm_above_100 = X.loc[X['BonusMalus'] > 100, 'BonusMalus'].mean()
-        self.bm_below_100 = X.loc[X['BonusMalus'] <= 100, 'BonusMalus'].mean()
+        self.bm_above_100 = X.loc[X['BonusMalus'] > 100, 'ClaimNb'].mean()
+        self.bm_below_100 = X.loc[X['BonusMalus'] <= 100, 'ClaimNb'].mean()
 
         return self
 
@@ -157,7 +157,7 @@ class CommonPrep(TransformerMixin):
         df_freq['VehPower'] = df_freq['VehPower'].apply(lambda x: 9 if x > 9 else x)
         return df_freq
 
-    def split(self, df_freq, seed = cc.params['seed']):
+    def split(self, df_freq, seed = int(cc.params['seed'])):
         df_freq_glm = deepcopy(df_freq)
         splitter = GroupShuffleSplit(test_size=self.testsize, n_splits=1, random_state=seed)
         split = splitter.split(df_freq_glm, groups=df_freq_glm['GroupID'])
@@ -216,12 +216,15 @@ class SpecificPrep(TransformerMixin):
 
         return X
 
-    def inverse_transform(self, X, y=None):
+    def inverse_transform(self, X, y=None, keep_ei = False):
         df = pd.DataFrame(X).copy(deep=True)
         df.columns = self.dummified_cols
         df = self.scaler.inverse_transform(df)
+        ei = df.filter(like="EI_", axis=1)
         df = self.gan_dummifier.inverse_transform(df)
         df = df.drop(['EI', 'GDV', 'Exposure'], axis='columns', errors='ignore')
+        if keep_ei:
+            df = pd.concat([df, ei], axis=1)
         df = self.xgb_dummifier.transform(df)
 
         return df

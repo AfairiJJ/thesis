@@ -80,11 +80,11 @@ def train_generator(generator,
                     output_loss_path,
                     output_rundata,
                     specific_dataprepper,
-                    batch_size=cc.params['batch_size'],
+                    batch_size=int(cc.params['batch_size']),
                     start_epoch=0,
-                    num_epochs=cc.params['num_epochs'],
-                    num_disc_steps=cc.params['disc_epochs'],  # From article
-                    num_gen_steps=cc.params['gen_epochs'],  # From article
+                    num_epochs=int(cc.params['num_epochs']),
+                    num_disc_steps=int(cc.params['disc_epochs']),  # From article
+                    num_gen_steps=int(cc.params['gen_epochs']),  # From article
                     penalty=cc.params['loss_penalty'],  # From article
 
                     ):
@@ -108,7 +108,11 @@ def train_generator(generator,
     logger.log(0, num_epochs, genname, 'Real RMSE', dev_rmse)
 
     ######
-    lowest_poisson_dev = 99999999
+    lowest_poisson_dev = cc.params['lowest_dev']
+    if np.isnan(lowest_poisson_dev):
+        lowest_poisson_dev = 99999999
+    else:
+        lowest_poisson_dev = cc.params['lowest_dev']
     trackers = {
         'poisson_real': dev_real,
         'mae_real': dev_mae,
@@ -150,7 +154,7 @@ def train_generator(generator,
             for _ in range(num_disc_steps):
                 # next batch
                 try:
-                    if epoch_index >= cc.params['beginning_set_rounds']:
+                    if epoch_index >= int(cc.params['beginning_set_rounds']):
                         batch = next(train_data_iterator)
                     else:
                         batch = next(beginning_data_iterator)
@@ -168,7 +172,7 @@ def train_generator(generator,
                 real_loss = - real_pred.mean(0).view(1) # 0->0 is worst, 1->-1 is best
 
                 # then train the discriminator only with fake data
-                noise = Variable(torch.FloatTensor(len(batch), cc.params['z_size']).normal_())
+                noise = Variable(torch.FloatTensor(len(batch), int(cc.params['z_size'])).normal_())
                 noise = to_cuda_if_available(noise)
                 fake_features = generator(noise, training=True)
                 fake_features = fake_features.detach()  # do not propagate to the generator
@@ -200,7 +204,7 @@ def train_generator(generator,
             for _ in range(num_gen_steps):
                 optim_gen.zero_grad()
 
-                noise = Variable(torch.FloatTensor(len(batch), cc.params['z_size']).normal_())
+                noise = Variable(torch.FloatTensor(len(batch), int(cc.params['z_size'])).normal_())
                 noise = to_cuda_if_available(noise)
                 gen_features = generator(noise, training=True)
                 fake_pred = discriminator(gen_features)
@@ -233,9 +237,9 @@ def train_generator(generator,
             gendata = sample(
                 generator,
                 num_features=cc.metadata['num_features'],
-                num_samples= cc.params['num_samples'],
-                batch_size=cc.params['num_samples'],
-                noise_size=cc.params['z_size']
+                num_samples= 500000,
+                batch_size=500000,
+                noise_size=int(cc.params['z_size'])
             )
 
             data_gen = pd.DataFrame(gendata)
@@ -249,6 +253,7 @@ def train_generator(generator,
             trackers['mae'] += [dev_mae]
             trackers['rmse'] += [dev_rmse]
 
+            cc.setparams(modelid=cc.params['sim_num'], param='epochs_ran', value=epoch_index)
             if dev_gen < lowest_poisson_dev:
                 lowest_poisson_dev = dev_gen
                 cc.setparams(modelid=cc.params['sim_num'], param='lowest_dev', value=dev_gen)
@@ -283,7 +288,7 @@ def train_generator(generator,
     logger.close()
 
 
-def run_training(train_data, val_data, specific, beginning, myseed = cc.params['seed']):
+def run_training(train_data, val_data, specific, beginning, myseed = int(cc.params['seed'])):
     np.random.seed(myseed)
     torch.manual_seed(myseed)
     if torch.cuda.is_available():
@@ -296,7 +301,7 @@ def run_training(train_data, val_data, specific, beginning, myseed = cc.params['
 
     generator = Generator(
         output_size=cc.metadata["variable_sizes"],
-        noise_size=cc.params['z_size'],
+        noise_size=int(cc.params['z_size']),
         hidden_sizes=[int(x) for x in cc.params['generator_hidden_sizes'].split(',')],
         bn_decay=cc.params['gen_bn_decay']
     )
@@ -307,7 +312,7 @@ def run_training(train_data, val_data, specific, beginning, myseed = cc.params['
 
     discriminator = Discriminator(
         leaky_param=cc.params['disc_leaky_param'],
-        input_size=cc.metadata['num_features'],
+        input_size=int(cc.metadata['num_features']),
         hidden_sizes=[int(x) for x in cc.params['discriminator_hidden_sizes'].split(',')],
         bn_decay=cc.params['disc_bn_decay'],  # no batch normalization for the critic
         critic=cc.params['critic']
