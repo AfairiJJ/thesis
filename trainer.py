@@ -100,6 +100,10 @@ def train_generator(generator,
     data_real = pd.DataFrame(train_data.features)
     data_val = pd.DataFrame(val_data.features)
 
+    if int(cc.params['num_samples']) < 500000:
+        data_real = data_real.sample(int(cc.params['num_samples']))
+    print(f"Length of input data: {len(data_real)}")
+
     # Report metrics on real dataset
     dev_real, dev_base, dev_mae, dev_rmse = run_regression(data_real, data_val, specific=specific_dataprepper)
     logger.log(0, num_epochs, genname, 'Real Poisson', dev_real)
@@ -109,7 +113,7 @@ def train_generator(generator,
 
     ######
     lowest_poisson_dev = cc.params['lowest_dev']
-    if np.isnan(lowest_poisson_dev):
+    if np.isnan(float(lowest_poisson_dev)):
         lowest_poisson_dev = 99999999
     else:
         lowest_poisson_dev = cc.params['lowest_dev']
@@ -229,7 +233,7 @@ def train_generator(generator,
         trackers['genlosses'] += [genloss]
         trackers['disclosses'] += [discloss]
 
-        if ((epoch_index) % 50 == 0) | debugcycle:
+        if ((epoch_index) % 10 == 0) | debugcycle:
             print('-----------------------------------------------')
             logger.flush()
             trackers['plotting_epochs'] += [epoch_index]
@@ -237,8 +241,8 @@ def train_generator(generator,
             gendata = sample(
                 generator,
                 num_features=cc.metadata['num_features'],
-                num_samples= 500000,
-                batch_size=500000,
+                num_samples= 100000,
+                batch_size= 100000,
                 noise_size=int(cc.params['z_size'])
             )
 

@@ -20,8 +20,14 @@ scaler_noei = './data/gan_dataprep/scaler.pickle'
 train_ganinput_ei = 'data/gan_dataprep/train_ganinput_ei.pickle'
 train_ganinput_noei = 'data/gan_dataprep/train_gan_noei.pickle'
 
-metadata_path = './config/metadata.json'
 paramspath = './config/ganruns.csv'
+
+parser = argparse.ArgumentParser(description='GAN input')
+parser.add_argument('--modelversion', default='3')
+args = parser.parse_args()
+
+
+
 
 def getparams(path = paramspath, modelversion = None):
     c1 = pd.read_csv(path, sep=';')
@@ -34,24 +40,31 @@ def getparams(path = paramspath, modelversion = None):
     return c1
 
 def setparams(modelid, param, value, path = paramspath):
-    try:
-        c1 = pd.read_csv(path, sep=';')
-        c1.loc[c1['sim_num'] == modelid, param] = value
-        c1.to_csv(path, sep=';', index=False)
-    except EmptyDataError:
-        pass
+    notloaded = True
+    while notloaded:
+        try:
+            c1 = pd.read_csv(path, sep=';')
+            c1.loc[c1['sim_num'] == modelid, param] = value
+            c1.to_csv(path, sep=';', index=False)
+            notloaded=False
+        except EmptyDataError:
+            print('Could not load data yet')
 
     assert len(c1.loc[c1['sim_num'] == modelid]) == 1, 'Cannot find the model or found multiple models'
 
+params = getparams(modelversion=args.modelversion)
+
+if params['has_ei']:
+    metadata_path = './config/metadata.json'
+    print('Has EI')
+else:
+    metadata_path = './config/metadata_noei.json'
+    print('Has no EI')
 
 def load_metadata(metadata_path=metadata_path):
     with open(metadata_path, "r") as metadata_file:
         metadata = json.load(metadata_file)
     return metadata
 
-metadata = load_metadata()
+metadata = load_metadata(metadata_path)
 
-parser = argparse.ArgumentParser(description='GAN input')
-parser.add_argument('--modelversion', default='23')
-args = parser.parse_args()
-params = getparams(modelversion=args.modelversion)

@@ -1,21 +1,39 @@
 {
   "variables": [
-    "VehPower", "VehAge", "DrivAge", "DensityGLM", "BonusMalus", "Exposure",
-    "ClaimNb", "VehBrand", "VehGas", "Region", "Area",
-
+    "VehPower", "VehAge", "DrivAge", "Density", "BonusMalus", "Exposure",
+    "VehBrand", "VehGas", "Region", "Area",
+    "ClaimNb"
   ],
 
-  "variable_types": [
-    "numerical", "numerical","numerical","numerical","numerical","numerical",
-    "categorical", "categorical", "categorical", "categorical", "categorical"
-  ],
+  "num_features": 52,
 
   "variable_sizes": [
     1, 1, 1, 1, 1, 1,
-    5, 11, 2, 22, 6
+    11, 2, 22, 6,
+    5
   ],
-  "num_variables": 11,
-  "num_binary_variables": 0,
-  "num_categorical_variables": 5,
-  "num_numerical_variables": 6
+
+  "standardized_vars": [
+    "VehPower",
+    "VehAge",
+    "DrivAge",
+    "Density",
+    "BonusMalus",
+    "Exposure"
+  ],
+
+  "cats_vars_xgb": [
+    "VehBrand",
+    "VehGas",
+    "Region",
+    "Area"
+  ],
+
+  "cats_vars_gan": [
+        "VehBrand",
+    "VehGas",
+    "Region",
+    "Area",
+    "ClaimNb"
+  ]
 }
