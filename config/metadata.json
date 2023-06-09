@@ -1,7 +1,7 @@
 {
   "variables": [
-    "VehPower", "VehAge", "DrivAge", "Density", "BonusMalus", "Exposure",
     "EI_Density", "EI_DrivAge", "EI_BonusMalus1", "EI_BonusMalus2", "EI_VehAge",
+    "VehPower", "VehAge", "DrivAge", "Density", "BonusMalus", "Exposure",
     "VehBrand", "VehGas", "Region", "Area",
     "ClaimNb"
   ],
@@ -9,8 +9,8 @@
   "num_features": 57,
 
   "variable_sizes": [
-    1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1,
     11, 2, 22, 6,
     5
   ],

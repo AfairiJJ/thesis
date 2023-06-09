@@ -100,10 +100,6 @@ def train_generator(generator,
     data_real = pd.DataFrame(train_data.features)
     data_val = pd.DataFrame(val_data.features)
 
-    if int(cc.params['num_samples']) < 500000:
-        data_real = data_real.sample(int(cc.params['num_samples']))
-    print(f"Length of input data: {len(data_real)}")
-
     # Report metrics on real dataset
     dev_real, dev_base, dev_mae, dev_rmse = run_regression(data_real, data_val, specific=specific_dataprepper)
     logger.log(0, num_epochs, genname, 'Real Poisson', dev_real)
@@ -298,6 +294,10 @@ def run_training(train_data, val_data, specific, beginning, myseed = int(cc.para
     if torch.cuda.is_available():
         print('CUDA IS AVAILABLE')
         torch.cuda.manual_seed_all(myseed)
+
+    if int(cc.params['num_samples']) < 500000:
+        train_data = train_data.sample(int(cc.params['num_samples']))
+    print(f"Length of input data: {len(train_data)}")
 
     beginning = Dataset(beginning.to_numpy().astype(np.float32))
     train_data = Dataset(train_data.to_numpy().astype(np.float32))
