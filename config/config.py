@@ -4,6 +4,8 @@ import json
 import pandas as pd
 from pandas.errors import EmptyDataError
 
+output_scaler = './data/scalers/mainscaler.pkl'
+
 original_data = './data/original_data/mtpl.pickle'
 
 train_common = './data/common_dataprep/train.pickle'
@@ -13,6 +15,7 @@ val_common = './data/common_dataprep/val.pickle'
 train_specific = './data/specific_dataprep/train.pickle'
 test_specific = './data/specific_dataprep/test.pickle'
 val_specific = './data/specific_dataprep/val.pickle'
+beginning_specific = './data/specific_dataprep/beginning.pickle'
 
 train_ganprep_noei = "./data/gan_dataprep/train_gan.pickle"
 scaler_noei = './data/gan_dataprep/scaler.pickle'

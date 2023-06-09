@@ -1,9 +1,11 @@
 import math
 from copy import deepcopy
 
+import torch
 from sklearn.base import TransformerMixin
 from sklearn.model_selection import GroupShuffleSplit
 from sklearn.preprocessing import StandardScaler
+from torch import tensor
 
 from Functions.original.utils.undo_dummy import back_from_dummies
 import config.config as cc
@@ -170,7 +172,7 @@ class CommonPrep(TransformerMixin):
 class MyStandardScaler(TransformerMixin):
     def __init__(self):
         self.scaler = StandardScaler(copy=True)
-        self.columns_to_scale = cc.metadata['standardized_vars']
+        self.columns_to_scale = cc.metadata_noei['standardized_vars']
     def fit(self, X, y=None):
         self.scaler = self.scaler.fit(X[self.columns_to_scale])
         return self
@@ -192,14 +194,13 @@ class SpecificPrep(TransformerMixin):
         self.gan_dummifier = Dummifier(convert_columns=gan_cats, drop_first=False)
         self.xgb_dummifier = Dummifier(convert_columns=xgb_cats, drop_first=True)
         self.variables = variables
+        self.eier = ExpertInputter()
 
     def fit(self, X, y=None):
+        X = X[self.variables]
         self.gan_dummifier.fit(X)
         self.xgb_dummifier.fit(X)
-
-        if self.addei:
-            X = self.eier.transform(X)
-        X = X[self.variables]
+        self.eier.fit(X)
         X = self.gan_dummifier.transform(X)
         self.dummified_cols = X.columns
         self.scaler.fit(X)
@@ -228,7 +229,13 @@ class SpecificPrep(TransformerMixin):
 
         return df
 
-
+    def add_ei(self, X, y=None):
+        df = pd.DataFrame(X).copy(deep=True)
+        df.columns = self.dummified_cols
+        df = self.scaler.inverse_transform(df)
+        df = self.eier.transform(df)
+        df = tensor(df.values, dtype=torch.float32)
+        return df
 
 
 

@@ -78,7 +78,6 @@ def train_generator(generator,
                     output_gen_path,
                     output_disc_path,
                     output_loss_path,
-                    output_rundata,
                     specific_dataprepper,
                     batch_size=int(cc.params['batch_size']),
                     start_epoch=0,
@@ -165,22 +164,26 @@ def train_generator(generator,
                 optim_disc.zero_grad()
 
                 # first train the discriminator only with real data
-                real_features = Variable(torch.from_numpy(batch))
-                real_features = to_cuda_if_available(real_features)
-                real_pred = discriminator(real_features)
+                disc_features_real = Variable(torch.from_numpy(batch))
+                disc_features_real = specific_dataprepper.add_ei(disc_features_real)
+                disc_features_real = to_cuda_if_available(disc_features_real)
+                real_pred = discriminator(disc_features_real)
                 # real_loss = abs(real_pred - 0.9).mean(0).view(1)
                 real_loss = - real_pred.mean(0).view(1) # 0->0 is worst, 1->-1 is best
 
                 # then train the discriminator only with fake data
                 noise = Variable(torch.FloatTensor(len(batch), int(cc.params['z_size'])).normal_())
                 noise = to_cuda_if_available(noise)
-                fake_features = generator(noise, training=True)
-                fake_features = fake_features.detach()  # do not propagate to the generator
-                fake_pred = discriminator(fake_features)
+                disc_features_fake = generator(noise, training=True)
+                disc_features_fake = disc_features_fake.detach()  # do not propagate to the generator
+                disc_features_fake = to_cpu_if_available(disc_features_fake)
+                disc_features_fake = specific_dataprepper.add_ei(disc_features_fake)
+                disc_features_fake = to_cuda_if_available(disc_features_fake)
+                fake_pred = discriminator(disc_features_fake)
                 fake_loss = fake_pred.mean(0).view(1) # 0->0 is best, 1->1 is worst
 
                 # this is the magic from WGAN-GP
-                gradient_penalty = calculate_gradient_penalty(discriminator, penalty, real_features, fake_features)
+                gradient_penalty = calculate_gradient_penalty(discriminator, penalty, disc_features_real, disc_features_fake)
 
                 # Backward propagation
                 real_loss.backward()
@@ -207,6 +210,8 @@ def train_generator(generator,
                 noise = Variable(torch.FloatTensor(len(batch), int(cc.params['z_size'])).normal_())
                 noise = to_cuda_if_available(noise)
                 gen_features = generator(noise, training=True)
+                with torch.no_grad():
+                    gen_features = specific_dataprepper.add_ei(gen_features)
                 fake_pred = discriminator(gen_features)
                 fake_loss = - fake_pred.mean(0).view(1) # 1->-1 is best, 0->0 is worst
                 fake_loss.backward()
@@ -236,7 +241,7 @@ def train_generator(generator,
 
             gendata = sample(
                 generator,
-                num_features=cc.metadata['num_features'],
+                num_features=cc.metadata_noei['num_features'],
                 num_samples= 100000,
                 batch_size= 100000,
                 noise_size=int(cc.params['z_size'])
@@ -291,6 +296,7 @@ def train_generator(generator,
 def run_training(train_data, val_data, specific, beginning, myseed = int(cc.params['seed'])):
     np.random.seed(myseed)
     torch.manual_seed(myseed)
+
     if torch.cuda.is_available():
         print('CUDA IS AVAILABLE')
         torch.cuda.manual_seed_all(myseed)
@@ -304,7 +310,7 @@ def run_training(train_data, val_data, specific, beginning, myseed = int(cc.para
     val_data = Dataset(val_data.to_numpy().astype(np.float32))
 
     generator = Generator(
-        output_size=cc.metadata["variable_sizes"],
+        output_size=cc.metadata_noei["variable_sizes"],
         noise_size=int(cc.params['z_size']),
         hidden_sizes=[int(x) for x in cc.params['generator_hidden_sizes'].split(',')],
         bn_decay=cc.params['gen_bn_decay']
@@ -316,7 +322,7 @@ def run_training(train_data, val_data, specific, beginning, myseed = int(cc.para
 
     discriminator = Discriminator(
         leaky_param=cc.params['disc_leaky_param'],
-        input_size=int(cc.metadata['num_features']),
+        input_size=int(cc.metadata_ei['num_features']),
         hidden_sizes=[int(x) for x in cc.params['discriminator_hidden_sizes'].split(',')],
         bn_decay=cc.params['disc_bn_decay'],  # no batch normalization for the critic
         critic=cc.params['critic']
@@ -335,7 +341,6 @@ def run_training(train_data, val_data, specific, beginning, myseed = int(cc.para
         output_gen_path=cc.params['output_generator'],
         output_disc_path=cc.params['output_discriminator'],
         output_loss_path=cc.params['output_loss'],
-        output_rundata=cc.params['output_rundata'],
         specific_dataprepper=specific
     )
 
