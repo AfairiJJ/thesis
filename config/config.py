@@ -54,17 +54,16 @@ def setparams(modelid, param, value, path = paramspath):
 
 params = getparams(modelversion=args.modelversion)
 
-if params['has_ei']:
-    metadata_path = './config/metadata.json'
-    print('Has EI')
-else:
-    metadata_path = './config/metadata_noei.json'
-    print('Has no EI')
-
-def load_metadata(metadata_path=metadata_path):
+def load_metadata(metadata_path):
     with open(metadata_path, "r") as metadata_file:
         metadata = json.load(metadata_file)
     return metadata
 
-metadata = load_metadata(metadata_path)
+metadata_ei = load_metadata('./config/metadata.json')
+metadata_noei = load_metadata('./config/metadata_noei.json')
 
+if params['has_ei']:
+    matadata_noei = metadata_ei
+    print('Has EI')
+else:
+    print('Has no EI')

@@ -186,20 +186,14 @@ class MyStandardScaler(TransformerMixin):
         return X
 
 class SpecificPrep(TransformerMixin):
-    def __init__(self, gan_cats, xgb_cats, addei = cc.params['has_ei'], variables = cc.metadata['variables']):
+    def __init__(self, gan_cats, xgb_cats, variables = cc.metadata_noei['variables']):
         self.dummified_cols = None
         self.scaler = MyStandardScaler()
         self.gan_dummifier = Dummifier(convert_columns=gan_cats, drop_first=False)
         self.xgb_dummifier = Dummifier(convert_columns=xgb_cats, drop_first=True)
-        self.addei = addei
         self.variables = variables
 
-        if self.addei:
-            self.eier = ExpertInputter()
-
     def fit(self, X, y=None):
-        if self.addei:
-            self.eier.fit(X)
         self.gan_dummifier.fit(X)
         self.xgb_dummifier.fit(X)
 
@@ -215,8 +209,6 @@ class SpecificPrep(TransformerMixin):
     def transform(self, X, y=None):
         X = X.copy(deep=True)
 
-        if self.addei:
-            X = self.eier.transform(X)
         X = X[self.variables]
         X = self.gan_dummifier.transform(X)
         X = self.scaler.transform(X)

@@ -18,37 +18,36 @@ def main():
     # GAN without expert input
 
     # GAN with expert input
-    if True:
-        common = CommonPrep()
-        train, val, test = common.fit_transform(df)
+    common = CommonPrep()
+    train, val, test = common.fit_transform(df)
 
-        specific_dataprepper = SpecificPrep(gan_cats=cc.metadata['cats_vars_gan'], xgb_cats=cc.metadata['cats_vars_xgb'])
-        specific_dataprepper = specific_dataprepper.fit(train)
+    specific_dataprepper = SpecificPrep(gan_cats=cc.metadata['cats_vars_gan'], xgb_cats=cc.metadata['cats_vars_xgb'])
+    specific_dataprepper = specific_dataprepper.fit(train)
 
-        # Saving datasets
-        train.to_pickle(cc.train_common)
-        val.to_pickle(cc.val_common)
-        test.to_pickle(cc.test_common)
-        with open(cc.params['output_scaler'], 'wb') as f:
-            pickle.dump(specific_dataprepper, f)
+    # Saving datasets
+    train.to_pickle(cc.train_common)
+    val.to_pickle(cc.val_common)
+    test.to_pickle(cc.test_common)
+    with open(cc.params['output_scaler'], 'wb') as f:
+        pickle.dump(specific_dataprepper, f)
 
-        # Train for beginning only
-        train_beginning = train.copy(deep=True).loc[train['ClaimNb'] > 0]
-        train_beginning2 = train.copy(deep=True).loc[train['ClaimNb'] == 0].head(len(train_beginning))
+    # Train for beginning only
+    train_beginning = train.copy(deep=True).loc[train['ClaimNb'] > 0]
+    train_beginning2 = train.copy(deep=True).loc[train['ClaimNb'] == 0].head(len(train_beginning))
 
-        # Transform all necessary data
-        train_beginning = specific_dataprepper.transform(pd.concat([train_beginning, train_beginning2]))
-        train = specific_dataprepper.transform(train)
-        test = specific_dataprepper.transform(test)
-        val = specific_dataprepper.transform(val)
+    # Transform all necessary data
+    train_beginning = specific_dataprepper.transform(pd.concat([train_beginning, train_beginning2]))
+    train = specific_dataprepper.transform(train)
+    test = specific_dataprepper.transform(test)
+    val = specific_dataprepper.transform(val)
 
-        # Saving datasets again
-        train.to_pickle(cc.train_specific)
-        val.to_pickle(cc.val_specific)
-        test.to_pickle(cc.test_specific)
+    # Saving datasets again
+    train.to_pickle(cc.train_specific)
+    val.to_pickle(cc.val_specific)
+    test.to_pickle(cc.test_specific)
 
-        # Starting training run
-        run_training(train, val, specific_dataprepper, train_beginning)
+    # Starting training run
+    run_training(train, val, specific_dataprepper, train_beginning)
 
 if __name__ == '__main__':
     main()
