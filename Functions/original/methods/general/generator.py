@@ -7,8 +7,12 @@ from Functions.original.methods.general.single_output import SingleOutput
 
 
 class Generator(nn.Module):
-
-    def __init__(self, noise_size, output_size, hidden_sizes=[], bn_decay=0.01):
+    def __init__(self,
+                 noise_size,  # Size of z vector
+                 output_size,  # Size of z vector plus number of continous variables
+                 hidden_sizes=[],  # A list of hidden layer sizes
+                 bn_decay=0.01  # batch norm decay parameter
+                 ):
         super(Generator, self).__init__()
 
         hidden_activation = nn.ReLU()
@@ -42,3 +46,7 @@ class Generator(nn.Module):
             hidden = self.hidden_layers(noise)
 
         return self.output(hidden, training=training, temperature=temperature)
+
+
+
+

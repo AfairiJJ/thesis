@@ -69,9 +69,9 @@ def train(autoencoder,
         logger.start_timer()
 
         # train
-        autoencoder.train(mode=True)
-        generator.train(mode=True)
-        discriminator.train(mode=True)
+        autoencoder.train_generator(mode=True)
+        generator.train_generator(mode=True)
+        discriminator.train_generator(mode=True)
 
         ae_losses = []
         disc_losses = []

@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 .idea/
-
+scaler*
 # C extensions
 *.so
 
@@ -162,6 +162,5 @@ cython_debug/
 #.idea/
 
 # MINE
-/data/generators/
 /data/discriminators/
 /data/losses/

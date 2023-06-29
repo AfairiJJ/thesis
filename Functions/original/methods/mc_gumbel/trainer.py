@@ -53,8 +53,8 @@ def train(generator,
         logger.start_timer()
 
         # train
-        generator.train(mode=True)
-        discriminator.train(mode=True)
+        generator.train_generator(mode=True)
+        discriminator.train_generator(mode=True)
 
         disc_losses = []
         gen_losses = []
@@ -131,8 +131,8 @@ def train(generator,
                 del gen_loss
 
         # validate discriminator
-        generator.train(mode=False)
-        discriminator.train(mode=False)
+        generator.train_generator(mode=False)
+        discriminator.train_generator(mode=False)
 
         correct = 0.0
         total = 0.0
