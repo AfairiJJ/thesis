@@ -1,5 +1,6 @@
 import argparse
 import json
+from time import sleep
 
 import pandas as pd
 from pandas.errors import EmptyDataError
@@ -39,18 +40,26 @@ def getparams(path = paramspath, modelversion = None):
         c1 = c1.iloc[0]
     return c1
 
-def setparams(modelid, param, value, path = paramspath):
+def setparams(modelid, param, value, path = paramspath, firstlen=len(pd.read_csv(paramspath, sep=';'))):
     notloaded = True
     while notloaded:
         try:
             c1 = pd.read_csv(path, sep=';')
-            c1.loc[c1['sim_num'] == modelid, param] = value
-            c1.to_csv(path, sep=';', index=False)
-            notloaded=False
         except EmptyDataError:
-            print('Could not load data yet')
+            print('Could not load data yet. Reloading')
+            sleep(1)
+            continue
 
-    assert len(c1.loc[c1['sim_num'] == modelid]) == 1, 'Cannot find the model or found multiple models'
+        if len(c1.loc[c1['sim_num'] == modelid]) != 1 or len(c1) != firstlen:
+            print('Ganruns.csv had wrong length. Reloading')
+            sleep(1)
+            continue
+
+        # If everything works
+        notloaded = False
+        c1.loc[c1['sim_num'] == modelid, param] = value
+        c1.to_csv(path, sep=';', index=False)
+
 
 params = getparams(modelversion=args.modelversion)
 

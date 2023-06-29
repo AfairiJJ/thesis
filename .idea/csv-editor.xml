@@ -17,6 +17,55 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/old/MC_WGAN_GP/training_iterations/iteration_records/190318_runs.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/old/MC_WGAN_GP/training_iterations/iteration_records/190325_runs.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/old/MC_WGAN_GP/training_iterations/iteration_records/190326_runs.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/old/MC_WGAN_GP/training_iterations/iteration_records/190326_runs_multi.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/old/MC_WGAN_GP/training_iterations/iteration_records/190327_multi.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/old/MC_WGAN_GP/training_iterations/iteration_records/190328_single.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/old/MC_WGAN_GP/training_iterations/iteration_records/flexible_template.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>

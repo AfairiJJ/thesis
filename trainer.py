@@ -296,7 +296,7 @@ def run_training(train_data, val_data, specific, beginning, myseed = int(cc.para
         torch.cuda.manual_seed_all(myseed)
 
     if int(cc.params['num_samples']) < 500000:
-        train_data = train_data.sample(int(cc.params['num_samples']))
+        train_data = train_data.sample(int(cc.params['num_samples']), random_state=cc.params['seed'])
     print(f"Length of input data: {len(train_data)}")
 
     beginning = Dataset(beginning.to_numpy().astype(np.float32))

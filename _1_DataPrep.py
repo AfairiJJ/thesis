@@ -168,9 +168,9 @@ class CommonPrep(TransformerMixin):
         return train, test
 
 class MyStandardScaler(TransformerMixin):
-    def __init__(self):
+    def __init__(self, columns_to_scale = cc.metadata['standardized_vars']):
         self.scaler = StandardScaler(copy=True)
-        self.columns_to_scale = cc.metadata['standardized_vars']
+        self.columns_to_scale = columns_to_scale
     def fit(self, X, y=None):
         self.scaler = self.scaler.fit(X[self.columns_to_scale])
         return self
@@ -186,9 +186,9 @@ class MyStandardScaler(TransformerMixin):
         return X
 
 class SpecificPrep(TransformerMixin):
-    def __init__(self, gan_cats, xgb_cats, addei = cc.params['has_ei'], variables = cc.metadata['variables']):
+    def __init__(self, gan_cats, xgb_cats, addei = cc.params['has_ei'], variables = cc.metadata['variables'], columns_to_scale = cc.metadata['standardized_vars']):
         self.dummified_cols = None
-        self.scaler = MyStandardScaler()
+        self.scaler = MyStandardScaler(columns_to_scale=columns_to_scale)
         self.gan_dummifier = Dummifier(convert_columns=gan_cats, drop_first=False)
         self.xgb_dummifier = Dummifier(convert_columns=xgb_cats, drop_first=True)
         self.addei = addei
@@ -223,14 +223,14 @@ class SpecificPrep(TransformerMixin):
 
         return X
 
-    def inverse_transform(self, X, y=None, keep_ei = False):
+    def inverse_transform(self, X, y=None):
         df = pd.DataFrame(X).copy(deep=True)
         df.columns = self.dummified_cols
         df = self.scaler.inverse_transform(df)
         ei = df.filter(like="EI_", axis=1)
         df = self.gan_dummifier.inverse_transform(df)
         df = df.drop(['EI', 'GDV', 'Exposure'], axis='columns', errors='ignore')
-        if keep_ei:
+        if self.addei:
             df = pd.concat([df, ei], axis=1)
         df = self.xgb_dummifier.transform(df)
 

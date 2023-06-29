@@ -15,7 +15,7 @@ from Functions.original.utils.commandline import parse_int_list
 from Functions.original.utils.cuda import to_cuda_if_available, to_cpu_if_available, load_without_cuda
 
 
-def sample(generator, num_samples, num_features, batch_size=100, noise_size=128):
+def sample(generator, num_samples, num_features, batch_size=10000, noise_size=128):
     generator = to_cuda_if_available(generator)
 
     generator.train(mode=False)
