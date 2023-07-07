@@ -10,13 +10,6 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="/config/ganruns_bigdata.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value=";" />
-            </Attribute>
-          </value>
-        </entry>
         <entry key="/old/MC_WGAN_GP/training_iterations/iteration_records/190318_runs.csv">
           <value>
             <Attribute>
